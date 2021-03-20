@@ -10,13 +10,21 @@ class Server {
 		try {
 
 			// server is listening on port 1234
-			server = new ServerSocket(1234);
+			server = new ServerSocket(1235);
 			server.setReuseAddress(true);
 
 			// running infinite loop for getting
 			// client request
-			while (true) {
+			int num_clients = 3;
 
+			while (true) {
+				if (num_clients!=0){
+					num_clients--;
+					String[] startOptions = new String[] {"java", "-cp", ".", "Client", String.valueOf(3 - num_clients)};
+					new ProcessBuilder(startOptions).start();
+				} else {
+					break;
+				}
 				// socket object to receive incoming client
 				// requests
 				Socket client = server.accept();
@@ -84,7 +92,7 @@ class Server {
 					System.out.printf(
 							" Sent from the client: %s\n",
 							line);
-					out.println(line);
+//					out.println(line);
 				}
 			}
 			catch (IOException e) {
