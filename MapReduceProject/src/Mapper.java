@@ -1,6 +1,3 @@
-import java.util.Arrays;
-import java.util.Scanner;
-
 public class Mapper {
     static int[] map(int[] source, add3 function){
         int[] res = new int[source.length];
