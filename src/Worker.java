@@ -20,7 +20,7 @@ class Worker {
 
             String id = args[0];
             String file_path = args[1];
-            SerFunc<String, String> func;
+            MapReduceFunction<String, String> func;
             func = functionFromString(args[2]);
             out.println(id + " :starting... input=" + file_path);
             out.flush();
@@ -42,13 +42,13 @@ class Worker {
      * Read the object from Base64 string.
      */
     @SuppressWarnings("unchecked")
-    private static SerFunc<String, String> functionFromString(String s) throws IOException, ClassNotFoundException {
+    private static MapReduceFunction<String, String> functionFromString(String s) throws IOException, ClassNotFoundException {
         byte[] data = Base64.getDecoder().decode(s);
         ObjectInputStream ois = new ObjectInputStream(
                 new ByteArrayInputStream(data));
-        SerFunc<String, String> o;
+        MapReduceFunction<String, String> o;
         try {
-            o = (SerFunc<String, String>) ois.readObject();
+            o = (MapReduceFunction<String, String>) ois.readObject();
         } catch (ClassCastException e) {
             o = null;
         }

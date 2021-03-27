@@ -1,4 +1,4 @@
-public class add3 implements SerFunc<String, String> {
+public class add3 implements MapReduceFunction<String, String> {
     @Override
     public String apply(String s) {
         int i = Integer.parseInt(String.valueOf(s.charAt(s.length() - 1)));
