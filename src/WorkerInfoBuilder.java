@@ -20,6 +20,11 @@ public class WorkerInfoBuilder {
         return this;
     }
 
+    public WorkerInfoBuilder setWorkerId(int id){
+        info.setWorkerId(id);
+        return this;
+    }
+
     public WorkerInfo build(){
         if(info.getWorkerProcess()!=null && info.getState()!=null && info.getType()!=null) {
             return info;

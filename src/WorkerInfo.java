@@ -1,4 +1,6 @@
 public class WorkerInfo {
+
+    private int workerId;
     private Process workerProcess;              //unable to get process ID from ProcessBuilder in Java 8. Working aroudn this issue until upgrade to Java 9.
     private WorkerType type;
     private WorkerState state;
@@ -23,6 +25,10 @@ public class WorkerInfo {
         return workerProcess;
     }
 
+    public void setWorkerId(int id){
+        this.workerId = id;
+    }
+
     public void setWorkerProcess(Process workerId) {
         this.workerProcess = workerId;
     }
@@ -33,5 +39,9 @@ public class WorkerInfo {
 
     public void setState(WorkerState state) {
         this.state = state;
+    }
+
+    public int getWorkerId() {
+        return workerId;
     }
 }

@@ -6,7 +6,7 @@ public class Worker {
 
     static String workerId;
 
-    private static String STATUS_UPDATE_FORMAT = "%s : %s";
+    private static String STATUS_UPDATE_FORMAT = "STATUS %s : %s";
 
     // driver code
     public static void main(String[] args) throws InterruptedException {
@@ -18,23 +18,24 @@ public class Worker {
 
             PrintWriter out = new PrintWriter(
                     socket.getOutputStream(), true);
-            sendState(WorkerState.RUNNING,out);
             // reading from server, optional - could be used to receive commands from master
             BufferedReader in
                     = new BufferedReader(new InputStreamReader(
                     socket.getInputStream()));
 
             workerId = args[0];
+            sendState(WorkerState.RUNNING,out);
+
 
             String file_path = args[1];
             MapReduceFunction<String, String> func;
             func = functionFromString(args[2]);
-
             String res = func.apply(file_path);
 
             sendState(WorkerState.DONE,out);
 
             out.flush();
+
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
         }
