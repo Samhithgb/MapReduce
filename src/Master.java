@@ -1,3 +1,7 @@
+import workerstate.WorkerInfo;
+import workerstate.WorkerState;
+import workerstate.WorkerType;
+
 import java.io.*;
 import java.net.*;
 import java.util.ArrayList;
