@@ -5,9 +5,10 @@ import java.util.Base64;
 public class Worker {
 
     // driver code
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
         // establish a connection by providing host and port
         // number
+        Thread.sleep(1000);
         try (Socket socket = new Socket("localhost", 1235)) {
             // writing to server
             PrintWriter out = new PrintWriter(
@@ -17,7 +18,6 @@ public class Worker {
             BufferedReader in
                     = new BufferedReader(new InputStreamReader(
                     socket.getInputStream()));
-
             String id = args[0];
             String file_path = args[1];
             MapReduceFunction<String, String> func;

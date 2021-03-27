@@ -7,8 +7,10 @@ public class MapReduce implements Serializable {
         System.out.println("MapReduce.map running");
         // Launch master with necessary arguments
         String master_input = String.join(",", source);
-        String[] startOptions = new String[]{"java", "-cp", ".", "master.Master", master_input, toString(mapFunction)};
+        System.out.println("master input :" + master_input);
+        String[] startOptions = new String[]{"java", "-cp", ".", "Master", master_input, toString(mapFunction)};
         ProcessBuilder pb = new ProcessBuilder(startOptions);
+        pb.redirectErrorStream(true);
         Process p = pb.start();
 
         // Get output of process

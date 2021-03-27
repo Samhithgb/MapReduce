@@ -19,8 +19,14 @@ class Master {
             int counter = 1;
             for (String inp : inputs) {
                 String[] startOptions = new String[]{"java", "-cp", ".", "Worker", String.valueOf(counter++), inp, func};
-                new ProcessBuilder(startOptions).start();
-                
+                ProcessBuilder pb = new ProcessBuilder(startOptions);
+                pb.redirectErrorStream(true);
+                Process p = pb.start();
+                BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    System.out.println(line);
+                }
                 // socket object to receive incoming client
                 // requests
                 Socket client = server.accept();
