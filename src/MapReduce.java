@@ -9,6 +9,7 @@ public class MapReduce implements Serializable {
         String master_input = String.join(",", source);
         String[] startOptions = new String[]{"java", "-cp", ".", "Master", master_input, toString(mapFunction)};
         ProcessBuilder pb = new ProcessBuilder(startOptions);
+        pb.redirectErrorStream(true);
         Process p = pb.start();
 
         // Get output of process

@@ -9,9 +9,10 @@ public class Worker {
     private static String STATUS_UPDATE_FORMAT = "%s : %s";
 
     // driver code
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
         // establish a connection by providing host and port
         // number
+        Thread.sleep(1000);
         try (Socket socket = new Socket("localhost", 1235)) {
             // writing to server
 
