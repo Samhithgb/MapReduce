@@ -1,8 +1,16 @@
 import java.io.*;
 import java.net.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 // Server class
 class Master {
+
+    private static List<WorkerInfo> sWorkers = Collections.synchronizedList(new ArrayList<>());
+
+    private static boolean isError = false;
+
     public static void main(String[] args) {
         ServerSocket server = null;
         String[] inputs = args[0].split(",");
@@ -14,18 +22,30 @@ class Master {
             server = new ServerSocket(1235);
             server.setReuseAddress(true);
 
-            // running infinite loop for getting
             // client request
             int counter = 1;
             for (String inp : inputs) {
                 String[] startOptions = new String[]{"java", "-cp", ".", "Worker", String.valueOf(counter++), inp, func};
+
                 ProcessBuilder pb = new ProcessBuilder(startOptions);
                 pb.redirectErrorStream(true);
                 Process p = pb.start();
                 BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
                 String line;
+
+                WorkerInfo info = new WorkerInfoBuilder().setWorkerProcess(p)
+                        .setWorkerState(WorkerState.RUNNING)
+                        .setWorkerType(WorkerType.MAPPER)
+                        .setWorkerId(counter)
+                        .build();
+
+                sWorkers.add(info);
+                System.out.println("Number of processes : " + sWorkers.size());
+
                 while ((line = reader.readLine()) != null) {
-                    System.out.println(line);
+                    //TODO : Error has happened. For Milestone 1, ignoring the error and simply updating a state. Fault tolerance to be implemented for upcoming milestones.
+                    System.out.println("Error " + line);
+                    isError = true;
                 }
                 // socket object to receive incoming client
                 // requests
@@ -33,7 +53,7 @@ class Master {
 
                 // Displaying that new client is connected
                 // to server
-                System.out.println("New client connected"
+                System.out.println("New client connected "
                         + client.getInetAddress()
                         .getHostAddress());
 
@@ -84,13 +104,16 @@ class Master {
 
                 String line;
                 while ((line = in.readLine()) != null) {
+                        if(line.contains("STATUS")) {
+                            //Status update received. Process.
+                            String[] two = line.split(":");
+                            WorkerState status = WorkerState.valueOf(two[1].trim());
+                            int id = Integer.parseInt(two[0].split(" ")[1]);
+                            WorkerInfo info = sWorkers.get(id-1);
+                            info.setState(status);
 
-                    // writing the received message from
-                    // client
-                    System.out.printf(
-                            " Sent from the client: %s\n",
-                            line);
-//					out.println(line);
+                            System.out.println("Status update received for Worker : " + id + " " + status.toString());
+                        }
                 }
             } catch (IOException e) {
                 e.printStackTrace();
