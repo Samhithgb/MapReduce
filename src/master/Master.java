@@ -1,3 +1,5 @@
+package master;
+
 import java.io.*;
 import java.net.*;
 
@@ -7,7 +9,7 @@ class Master {
         ServerSocket server = null;
         String[] inputs = args[0].split(",");
         String func = args[1];
-        System.out.println("Master running");
+        System.out.println("master.Master running");
         try {
 
             // server is listening on port 1234

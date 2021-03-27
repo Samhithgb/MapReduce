@@ -1,3 +1,5 @@
 /.metadata/
 .DS_Store
 .idea
+/out
+project_folder.iml

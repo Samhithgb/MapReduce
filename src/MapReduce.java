@@ -2,11 +2,11 @@ import java.io.*;
 import java.util.Base64;
 
 public class MapReduce implements Serializable {
-    static int initialize(String[] source, MapReduceFunction<?, ?> function) throws IOException, InterruptedException {
+    static int initialize(String[] source, MapReduceFunction<?, ?> mapFunction, MapReduceFunction<?, ?> reduceFunction) throws IOException, InterruptedException {
         System.out.println("MapReduce.map running");
         // Launch master with necessary arguments
         String master_input = String.join(",", source);
-        String[] startOptions = new String[]{"java", "-cp", ".", "Master", master_input, toString(function)};
+        String[] startOptions = new String[]{"java", "-cp", ".", "master.Master", master_input, toString(mapFunction)};
         ProcessBuilder pb = new ProcessBuilder(startOptions);
         Process p = pb.start();
 
