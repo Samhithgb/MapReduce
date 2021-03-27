@@ -1,8 +1,12 @@
 import java.io.*;
 import java.net.*;
+import java.util.ArrayList;
+import java.util.List;
 
 // Server class
 class Master {
+    List<WorkerInfo> workers = new ArrayList<>();
+
     public static void main(String[] args) {
         ServerSocket server = null;
         String[] inputs = args[0].split(",");
@@ -14,13 +18,17 @@ class Master {
             server = new ServerSocket(1235);
             server.setReuseAddress(true);
 
-            // running infinite loop for getting
             // client request
             int counter = 1;
             for (String inp : inputs) {
                 String[] startOptions = new String[]{"java", "-cp", ".", "Worker", String.valueOf(counter++), inp, func};
-                new ProcessBuilder(startOptions).start();
-                
+                Process process = new ProcessBuilder(startOptions).start();
+
+                WorkerInfo info = new WorkerInfoBuilder().setWorkerProcess(process)
+                        .setWorkerState(WorkerState.RUNNING)
+                        .setWorkerType(WorkerType.MAPPER)
+                        .build();
+
                 // socket object to receive incoming client
                 // requests
                 Socket client = server.accept();
