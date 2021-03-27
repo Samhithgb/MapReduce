@@ -20,7 +20,7 @@ class Master {
             for (String inp : inputs) {
                 String[] startOptions = new String[]{"java", "-cp", ".", "Worker", String.valueOf(counter++), inp, func};
                 new ProcessBuilder(startOptions).start();
-
+                
                 // socket object to receive incoming client
                 // requests
                 Socket client = server.accept();
