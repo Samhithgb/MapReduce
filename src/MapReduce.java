@@ -1,9 +1,9 @@
 import java.io.*;
 import java.util.Base64;
 
-public class Mapper implements Serializable {
-    static int map(String[] source, SerFunc<?, ?> function) throws IOException, InterruptedException {
-        System.out.println("Mapper.map running");
+public class MapReduce implements Serializable {
+    static int initialize(String[] source, SerFunc<?, ?> function) throws IOException, InterruptedException {
+        System.out.println("MapReduce.map running");
         // Launch master with necessary arguments
         String master_input = String.join(",", source);
         String[] startOptions = new String[] {"java", "-cp", ".", "Master", master_input, toString(function)};
