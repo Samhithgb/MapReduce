@@ -1,9 +1,8 @@
-import java.util.function.Function;
-
-public class add3 implements Function<Integer, Integer> {
+public class add3 implements SerFunc<String, String> {
     @Override
-    public Integer apply(Integer integer) {
-        return integer + 3;
+    public String apply(String s) {
+        int i = Integer.parseInt(String.valueOf(s.charAt(s.length()-1)));
+        return (s.toUpperCase()+"_"+(i*3)+"_"+3);
     }
 }
 

@@ -2,11 +2,12 @@ import java.io.*;
 import java.net.*;
 
 // Server class
-class Server {
-	public static void main(String[] args)
-	{
+class Master {
+	public static void main(String[] args){
 		ServerSocket server = null;
-
+		String[] inputs = args[0].split(",");
+		String func = args[1];
+		System.out.println("Master running");
 		try {
 
 			// server is listening on port 1234
@@ -15,16 +16,11 @@ class Server {
 
 			// running infinite loop for getting
 			// client request
-			int num_clients = 3;
+			int counter = 1;
+			for (String inp: inputs) {
+				String[] startOptions = new String[] {"java", "-cp", ".", "Worker", String.valueOf(counter++), inp, func};
+				new ProcessBuilder(startOptions).start();
 
-			while (true) {
-				if (num_clients!=0){
-					num_clients--;
-					String[] startOptions = new String[] {"java", "-cp", ".", "Client", String.valueOf(3 - num_clients)};
-					new ProcessBuilder(startOptions).start();
-				} else {
-					break;
-				}
 				// socket object to receive incoming client
 				// requests
 				Socket client = server.accept();
@@ -58,6 +54,7 @@ class Server {
 			}
 		}
 	}
+
 
 	// ClientHandler class
 	private static class ClientHandler implements Runnable {

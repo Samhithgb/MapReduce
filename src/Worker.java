@@ -26,24 +26,42 @@ class Worker {
 
 			String id = args[0];
 			String file_path = args[1];
-			InputStream is = new ByteArrayInputStream(args[2].getBytes(StandardCharsets.UTF_8));
-			ObjectInputStream inp = new ObjectInputStream(is);
-			m = (Mapper)inp.readObject();
+			SerFunc func = (SerFunc) fromString(args[2]);
 
-//			System.out.println("sending 'starting...'");
-			out.println(args[0] + " :starting...");
+			out.println( id + " :starting... input=" + file_path);
 			out.flush();
 			Thread.sleep(1000);
-//			System.out.println("sending 'running...'");
-			out.println(args[0] + " :running...");
+
+			String res = (String) func.apply(file_path);
+			out.println(id + " :running... output=" + res);
 			out.flush();
 			Thread.sleep(5000);
-//			System.out.println("sending 'done...'");
+
 			out.println(args[0] + " :done...");
 			out.flush();
 		}
-		catch (IOException | InterruptedException e) {
+		catch (IOException | InterruptedException | ClassNotFoundException e) {
 			e.printStackTrace();
 		}
 	}
+	/** Read the object from Base64 string. */
+	private static Object fromString( String s ) throws IOException ,
+			ClassNotFoundException {
+		byte [] data = Base64.getDecoder().decode( s );
+		ObjectInputStream ois = new ObjectInputStream(
+				new ByteArrayInputStream(  data ) );
+		Object o  = ois.readObject();
+		ois.close();
+		return o;
+	}
+
+	/** Write the object to a Base64 string. */
+	private static String toString( Serializable o ) throws IOException {
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		ObjectOutputStream oos = new ObjectOutputStream( baos );
+		oos.writeObject( o );
+		oos.close();
+		return Base64.getEncoder().encodeToString(baos.toByteArray());
+	}
+
 }
