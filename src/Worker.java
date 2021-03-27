@@ -1,15 +1,12 @@
 import java.io.*;
 import java.net.*;
-import java.nio.charset.StandardCharsets;
-import java.util.*;
-import java.util.function.Function;
+import java.util.Base64;
 
 // Client class
 class Worker {
 
 	// driver code
 	public static void main(String[] args) throws InterruptedException {
-		Mapper m = null;
 		// establish a connection by providing host and port
 		// number
 //		Thread.sleep(2000);
@@ -26,13 +23,13 @@ class Worker {
 
 			String id = args[0];
 			String file_path = args[1];
-			SerFunc func = (SerFunc) fromString(args[2]);
-
+			SerFunc<String, String> func;
+			func = functionFromString(args[2]);
 			out.println( id + " :starting... input=" + file_path);
 			out.flush();
 			Thread.sleep(1000);
 
-			String res = (String) func.apply(file_path);
+			String res = func.apply(file_path);
 			out.println(id + " :running... output=" + res);
 			out.flush();
 			Thread.sleep(5000);
@@ -44,24 +41,21 @@ class Worker {
 			e.printStackTrace();
 		}
 	}
+
 	/** Read the object from Base64 string. */
-	private static Object fromString( String s ) throws IOException ,
-			ClassNotFoundException {
+	@SuppressWarnings("unchecked")
+	private static SerFunc<String, String> functionFromString( String s ) throws IOException , ClassNotFoundException {
 		byte [] data = Base64.getDecoder().decode( s );
 		ObjectInputStream ois = new ObjectInputStream(
 				new ByteArrayInputStream(  data ) );
-		Object o  = ois.readObject();
+		SerFunc<String, String> o;
+		try {
+			o = (SerFunc<String, String>) ois.readObject();
+		} catch (ClassCastException e){
+			o = null;
+		}
 		ois.close();
 		return o;
-	}
-
-	/** Write the object to a Base64 string. */
-	private static String toString( Serializable o ) throws IOException {
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		ObjectOutputStream oos = new ObjectOutputStream( baos );
-		oos.writeObject( o );
-		oos.close();
-		return Base64.getEncoder().encodeToString(baos.toByteArray());
 	}
 
 }

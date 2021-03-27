@@ -2,7 +2,7 @@ import java.io.*;
 import java.util.Base64;
 
 public class Mapper implements Serializable {
-    static int map(String[] source, SerFunc function) throws IOException, InterruptedException {
+    static int map(String[] source, SerFunc<?, ?> function) throws IOException, InterruptedException {
         System.out.println("Mapper.map running");
         // Launch master with necessary arguments
         String master_input = String.join(",", source);
