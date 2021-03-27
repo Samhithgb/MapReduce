@@ -7,7 +7,7 @@ public class TestCaller {
 
         String[] input_files = {"./file" + (number + 1), "./file" + (number + 2), "./file" + (number + 3), "./file" + (number + 4)};
         System.out.println("You entered: " + Arrays.toString(input_files));
-        add3 o = new add3();
+        TestMapFunction o = new TestMapFunction();
         int res = MapReduce.initialize(input_files, MapReduceFunction.makeSerializable(o));
         if (res == 0) {
             System.out.println("SUCCESS");
