@@ -4,38 +4,43 @@ import java.util.Base64;
 
 public class Worker {
 
+    static String workerId;
+
+    private static String STATUS_UPDATE_FORMAT = "%s : %s";
+
     // driver code
     public static void main(String[] args) {
         // establish a connection by providing host and port
         // number
         try (Socket socket = new Socket("localhost", 1235)) {
             // writing to server
+
             PrintWriter out = new PrintWriter(
                     socket.getOutputStream(), true);
-
+            sendState(WorkerState.RUNNING,out);
             // reading from server, optional - could be used to receive commands from master
             BufferedReader in
                     = new BufferedReader(new InputStreamReader(
                     socket.getInputStream()));
 
-            String id = args[0];
+            workerId = args[0];
+
             String file_path = args[1];
             MapReduceFunction<String, String> func;
             func = functionFromString(args[2]);
-            out.println(id + " :starting... input=" + file_path);
-            out.flush();
-            Thread.sleep(1000);
 
             String res = func.apply(file_path);
-            out.println(id + " :running... output=" + res);
-            out.flush();
-            Thread.sleep(5000);
 
-            out.println(args[0] + " :done...");
+            sendState(WorkerState.DONE,out);
+
             out.flush();
-        } catch (IOException | InterruptedException | ClassNotFoundException e) {
+        } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
         }
+    }
+
+    static void sendState(WorkerState state, PrintWriter out){
+        out.println(String.format(STATUS_UPDATE_FORMAT,workerId,state.toString()));
     }
 
     /**

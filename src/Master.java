@@ -22,7 +22,7 @@ class Master {
             int counter = 1;
             for (String inp : inputs) {
                 String[] startOptions = new String[]{"java", "-cp", ".", "Worker", String.valueOf(counter++), inp, func};
-                Process process = new ProcessBuilder(startOptions).start();
+                Process process = new ProcessBuilder(startOptions).redirectOutput(ProcessBuilder.Redirect.INHERIT).start();
 
                 WorkerInfo info = new WorkerInfoBuilder().setWorkerProcess(process)
                         .setWorkerState(WorkerState.RUNNING)

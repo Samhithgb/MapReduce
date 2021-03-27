@@ -12,14 +12,13 @@ public class TestCaller {
 
         try
         {
-            FileInputStream fis=new FileInputStream("./input_data_paths.txt");
+            FileInputStream fis=new FileInputStream("C:\\Users\\gbsam\\IdeaProjects\\p1_mapreduce-team-88\\src\\input_data_paths.txt");
             Scanner sc=new Scanner(fis);
             while(sc.hasNextLine())
             {
                 list.add(sc.nextLine());
             }
             sc.close();
-            System.out.println("Shashank List: " + list);
             String[] itemsArray = new String[list.size()];
             itemsArray = list.toArray(itemsArray);
             return itemsArray;
