@@ -1,12 +1,15 @@
 import java.io.*;
 import java.net.*;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.function.Function;
 
 // Client class
-class Client {
+class Worker {
 
 	// driver code
 	public static void main(String[] args) throws InterruptedException {
+		Mapper m = null;
 		// establish a connection by providing host and port
 		// number
 //		Thread.sleep(2000);
@@ -21,6 +24,11 @@ class Client {
 					= new BufferedReader(new InputStreamReader(
 					socket.getInputStream()));
 
+			String id = args[0];
+			String file_path = args[1];
+			InputStream is = new ByteArrayInputStream(args[2].getBytes(StandardCharsets.UTF_8));
+			ObjectInputStream inp = new ObjectInputStream(is);
+			m = (Mapper)inp.readObject();
 
 //			System.out.println("sending 'starting...'");
 			out.println(args[0] + " :starting...");
