@@ -1,7 +1,7 @@
 import java.io.IOException;
 import java.util.Arrays;
 
-public class caller {
+public class TestCaller {
     public static void main(String[] args) throws IOException, InterruptedException {
         int number = 5;
 
