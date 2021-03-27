@@ -1,5 +1,3 @@
-package master;
-
 import java.io.*;
 import java.net.*;
 
@@ -9,7 +7,7 @@ class Master {
         ServerSocket server = null;
         String[] inputs = args[0].split(",");
         String func = args[1];
-        System.out.println("master.Master running");
+        System.out.println("Master running");
         try {
 
             // server is listening on port 1234
@@ -22,7 +20,7 @@ class Master {
             for (String inp : inputs) {
                 String[] startOptions = new String[]{"java", "-cp", ".", "Worker", String.valueOf(counter++), inp, func};
                 new ProcessBuilder(startOptions).start();
-
+                
                 // socket object to receive incoming client
                 // requests
                 Socket client = server.accept();

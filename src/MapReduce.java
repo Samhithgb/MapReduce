@@ -1,4 +1,5 @@
 import java.io.*;
+import java.net.Socket;
 import java.util.Base64;
 
 public class MapReduce implements Serializable {
@@ -32,4 +33,5 @@ public class MapReduce implements Serializable {
         oos.close();
         return Base64.getEncoder().encodeToString(baos.toByteArray());
     }
+
 }

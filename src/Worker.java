@@ -1,8 +1,8 @@
 import java.io.*;
-import java.net.*;
+import java.net.Socket;
 import java.util.Base64;
 
-class Worker {
+public class Worker {
 
     // driver code
     public static void main(String[] args) {
