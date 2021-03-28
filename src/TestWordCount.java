@@ -62,11 +62,13 @@ public class TestWordCount {
 
         //construct expected HashMap with counts from input files.
         HashMap<String,Integer> expectedCounts = new HashMap<>();
-        expectedCounts.put("data",1);
-        expectedCounts.put("for",1);
-        expectedCounts.put("count",1);
-        expectedCounts.put("test",3);
-        expectedCounts.put("word",1);
+        expectedCounts.put("data",2);
+        expectedCounts.put("for",2);
+        expectedCounts.put("count",2);
+        expectedCounts.put("test",4);
+        expectedCounts.put("word",2);
+        expectedCounts.put("set",1);
+        expectedCounts.put("another",1);
 
         for(File i : foundFiles) {
             FileInputStream fis = new FileInputStream(i);
@@ -77,7 +79,7 @@ public class TestWordCount {
                     String[] counts = line.split("=");
                     System.out.println("Count " + counts[0] + " " + counts[1]);
                     if (actualCounts.containsKey(counts[0].trim())) {
-                        //ignore.
+                        actualCounts.put(counts[0].trim(), actualCounts.getOrDefault(counts[0].trim(), 1) + Integer.parseInt(counts[1].trim()));
                     } else {
                         actualCounts.put(counts[0].trim(), Integer.parseInt(counts[1].trim()));
                     }
