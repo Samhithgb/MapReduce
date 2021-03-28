@@ -32,7 +32,7 @@ public class TestVowelCount {
 
     public static void main(String[] args) throws IOException, InterruptedException {
         int number = 5;
-
+        System.out.println("RUNNING VOWEL COUNT VERIFICATION");
         configLocation = args[0];
 
         String[] input_files = getInputDataList();
