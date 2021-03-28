@@ -1,6 +1,4 @@
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.io.*;
 import java.util.*;
 
 public class TestCharacterCount {
@@ -37,6 +35,8 @@ public class TestCharacterCount {
 
         configLocation = args[0];
 
+
+
         String[] input_files = getInputDataList();
         System.out.println("You entered: " + Arrays.toString(input_files));
         CharacterCountMapFunction o = new CharacterCountMapFunction();
@@ -51,9 +51,14 @@ public class TestCharacterCount {
     private static void verifyCharacterCount() throws FileNotFoundException {
         //Based on the input, the word counts outputted from the workers have to be as follows.
 
-        String[] filenames = new String[]{"filename1.txt","filename3.txt"};
         HashMap<String, Integer> actualCounts = new HashMap<>();
 
+        File dir = new File(".");
+        File[] foundFiles = dir.listFiles(new FilenameFilter() {
+            public boolean accept(File dir, String name) {
+                return name.startsWith("filename");
+            }
+        });
         //construct expected HashMap with counts from input files.
         HashMap<String,Integer> expectedCounts = new HashMap<>();
         expectedCounts.put("data",4);
@@ -62,7 +67,7 @@ public class TestCharacterCount {
         expectedCounts.put("test",4);
         expectedCounts.put("word",4);
 
-        for(String i : filenames) {
+        for(File i : foundFiles) {
             FileInputStream fis = new FileInputStream(i);
             Scanner sc = new Scanner(fis);
             while (sc.hasNextLine()) {
@@ -71,7 +76,7 @@ public class TestCharacterCount {
                     String[] counts = line.split("=");
                     System.out.println("Count " + counts[0] + " " + counts[1]);
                     if (actualCounts.containsKey(counts[0].trim())) {
-                        actualCounts.put(counts[0].trim(), actualCounts.getOrDefault(counts[0].trim(), 1) + Integer.parseInt(counts[1].trim()));
+                        //ignore.
                     } else {
                         actualCounts.put(counts[0].trim(), Integer.parseInt(counts[1].trim()));
                     }
