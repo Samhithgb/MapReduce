@@ -1,6 +1,17 @@
 # p1_mapreduce-team-88
-1. Build project in IntelliJ IDEA
-2. Open terminal in `MapReduceProject/out/production/MapReduceProject`
-3. run Server using command `java -cp . Server`
 
-Workload simulated with `Thread.sleep`
+#Milestone 1: 
+
+For running all tests in the milestone 1, please checkout the project, and run the following commands in the command line:  
+
+
+For Unix-based systems : 
+
+java *.java 
+java RunTests <path_to>/input_data_paths.txt
+
+For Windows : 
+
+java *.java 
+java RunTests <path_to>\input_data_paths.txt
+
