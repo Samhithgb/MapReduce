@@ -30,4 +30,4 @@ Notes :
 Verification :  The test cases that are run include : 
 1. Word Count : Count the number of occurences of a word accross multiple files. 
 2. Character Count : Compute the character count of all the words occuring across all the input files. 
-3. Vowel Count : Compute the number of vowels occuring in all the words appeading across the input files
+3. Vowel Count : Compute the number of vowels occuring in all the words appeading across the input files.
