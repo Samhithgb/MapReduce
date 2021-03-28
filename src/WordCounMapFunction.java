@@ -1,4 +1,4 @@
-public class TestMapFunction implements MapReduceFunction<String, String> {
+public class WordCounMapFunction implements MapReduceFunction<String, String> {
     @Override
     public String apply(String s) {
         //int i = Integer.parseInt(String.valueOf(s.charAt(s.length() - 1)));

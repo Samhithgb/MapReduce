@@ -5,7 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 
-public class TestCaller {
+public class TestWordCount {
 
     public static String[] getInputDataList() {
         List<String> list=new ArrayList<String>();
@@ -37,7 +37,7 @@ public class TestCaller {
 
         String[] input_files = getInputDataList();
         System.out.println("You entered: " + Arrays.toString(input_files));
-        TestMapFunction o = new TestMapFunction();
+        WordCounMapFunction o = new WordCounMapFunction();
         int res = MapReduce.initialize(input_files, MapReduceFunction.makeSerializable(o), null);
         if (res == 0) {
             System.out.println("SUCCESS");
