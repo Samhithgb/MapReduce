@@ -35,6 +35,7 @@ public class TestCharacterCount {
 
         configLocation = args[0];
 
+        System.out.println("RUNNING CHARACTER COUNT VERIFICATION");
 
 
         String[] input_files = getInputDataList();

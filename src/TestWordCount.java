@@ -34,7 +34,7 @@ public class TestWordCount {
         int number = 5;
 
         configLocation = args[0];
-
+        System.out.println("RUNNING WORD COUNT VERIFICATION");
         String[] input_files = getInputDataList();
         System.out.println("You entered: " + Arrays.toString(input_files));
         WordCountMapFunction o = new WordCountMapFunction();
