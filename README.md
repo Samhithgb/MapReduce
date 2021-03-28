@@ -8,7 +8,7 @@ Video of the working verification : https://drive.google.com/file/d/1PrxqZTZ-MAv
 For running all tests in the milestone 1, please checkout the project, and run the following commands in the command line:  \
 
 
-For Unix-based systems : \
+For Unix-based systems : 
 
 ```
 java *.java 
