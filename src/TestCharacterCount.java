@@ -57,7 +57,7 @@ public class TestCharacterCount {
         File dir = new File(".");
         File[] foundFiles = dir.listFiles(new FilenameFilter() {
             public boolean accept(File dir, String name) {
-                return name.startsWith("filename");
+                return name.contains("filename");
             }
         });
         //construct expected HashMap with counts from input files.
