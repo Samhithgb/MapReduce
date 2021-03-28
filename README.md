@@ -17,3 +17,7 @@ java *.java
 java RunTests <path_to>\input_data_paths.txt
 
 ```
+Notes : 
+
+- The implementation currently arleady takes care of multiple worker processes and their communication of the states to master. 
+- Currently, only inputs from one file are considered for generating intermediate files. We will be working on multi-file input for the upcoming milestone. 
