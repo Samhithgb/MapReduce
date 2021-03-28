@@ -4,9 +4,13 @@ import workerstate.WorkerType;
 
 import java.io.*;
 import java.net.*;
+import java.sql.Time;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 // Server class
 class Master {
@@ -69,6 +73,13 @@ class Master {
                 // separately
                 new Thread(clientSock).start();
             }
+
+            //Implement periodic checks for worker states.
+            ScheduledExecutorService scheduler
+                    = Executors.newScheduledThreadPool(1);
+            scheduler.scheduleAtFixedRate(new PeriodicTask(),10, 1000, TimeUnit.MILLISECONDS);
+
+
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
@@ -79,6 +90,27 @@ class Master {
                     e.printStackTrace();
                 }
             }
+        }
+    }
+
+    private static class PeriodicTask implements Runnable {
+        public PeriodicTask(){}
+        @Override
+        public void run() {
+            boolean isDone = true;
+            synchronized (sWorkers) {
+                for(WorkerInfo i : sWorkers) {
+                    if(i.getState() != WorkerState.DONE){
+                        isDone = false;
+                        break;
+                    }
+                }
+            }
+            if(isDone){
+                //TODO : Once reducers are implemented, take care of launching them from here
+                System.exit(0);
+            }
+
         }
     }
 
