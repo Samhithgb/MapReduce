@@ -1,26 +1,39 @@
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
+import java.io.*;
 import java.util.Base64;
 import java.util.HashMap;
+import java.util.Scanner;
 
 public class WordCounMapFunction implements MapReduceFunction<String, String> {
     @Override
     public String apply(String s) {
-        System.out.println(" inside the TestMapFunction");
-
-        HashMap<String, String> haspmap = new HashMap<String, String>();
-        haspmap.put("england", "1");
-        haspmap.put("nepal", "2");
-        haspmap.put("yoo", "3");
-
+        HashMap<String,String> map = new HashMap<>();
         try {
-            return serialize(haspmap);
+            File myObj = new File(s);
+            Scanner myReader = new Scanner(myObj);
+            while (myReader.hasNextLine()) {
+                String data = myReader.nextLine();
+                String[] array = data.split(" ");
+
+                for(String i : array){
+                    if(map.containsKey(i)) {
+                        map.put(i, String.valueOf(Integer.parseInt(map.getOrDefault(i,String.valueOf(1)))+1));
+                    } else {
+                        map.put(i,String.valueOf(1));
+                    }
+                }
+            }
+            myReader.close();
+
+        } catch (FileNotFoundException e) {
+            System.out.println("An error occurred.");
+            e.printStackTrace();
+        }
+        try {
+            return serialize(map);
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return "";
+        return "ERROR";
     }
 
     private static String serialize(Serializable o) throws IOException {

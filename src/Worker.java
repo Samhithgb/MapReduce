@@ -67,21 +67,19 @@ public class Worker {
 
     private static String AssignIntermediateFilesAndReturnFileLocations(HashMap<String, String> resultFromMapper) throws IOException {
         int num_of_reducers = 3;
-        File myObj1 = new File("filename1.txt");
-        File myObj2 = new File("filename2.txt");
-        File myObj3 = new File("filename3.txt");
-
         FileWriter myWriter1 = new FileWriter("filename1.txt");
         FileWriter myWriter2 = new FileWriter("filename2.txt");
         FileWriter myWriter3 = new FileWriter("filename3.txt");
 
         for (String i : resultFromMapper.keySet()) {
-            System.out.println("key: " + i + " value: " + resultFromMapper.get(i));
             if(i.charAt(0) < 'g') {
+                myWriter1.write("\n");
                 myWriter1.write(i + " = " +  resultFromMapper.get(i));
             } else if (i.charAt(0) < 'p') {
+                myWriter2.write("\n");
                 myWriter2.write(i + " = " +  resultFromMapper.get(i));
             } else {
+                myWriter3.write("\n");
                 myWriter3.write(i + " = " +  resultFromMapper.get(i));
             }
         }
@@ -110,11 +108,6 @@ public class Worker {
         ois.close();
         return o;
     }
-
-
-
-
-
 
     public static String apply(String s) { // for testing purposes only
         System.out.println(" inside the TestMapFunction");
