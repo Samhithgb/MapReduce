@@ -73,7 +73,7 @@ public class Worker {
         String[] fileNames = new String[num_of_reducers];
 
         for(int i=0;i<num_of_reducers;i++) {
-            fileNames[i] = "filename" + (i+1) + ".txt";
+            fileNames[i] = "worker_id_"+ workerId + "_filename_" + (i+1) + ".txt";
             fileObjArray[i] = new File(fileNames[i]);
         }
 
@@ -84,11 +84,11 @@ public class Worker {
         for (String i : resultFromMapper.keySet()) {
             // System.out.println("key: " + i + " value: " + resultFromMapper.get(i));
             if(i.charAt(0) < 'g') {
-                myWriterArray[0].write(i + " = " +  resultFromMapper.get(i));
+                myWriterArray[0].write(i + " = " +  resultFromMapper.get(i) + '\n');
             } else if (i.charAt(0) < 'p') {
-                myWriterArray[1].write(i + " = " +  resultFromMapper.get(i));
+                myWriterArray[1].write(i + " = " +  resultFromMapper.get(i) + '\n');
             } else {
-                myWriterArray[2].write(i + " = " +  resultFromMapper.get(i));
+                myWriterArray[2].write(i + " = " +  resultFromMapper.get(i) + '\n');
             }
         }
 
