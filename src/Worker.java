@@ -122,11 +122,6 @@ public class Worker {
         return o;
     }
 
-
-
-
-
-
     public static String apply(String s) { // for testing purposes only
         System.out.println(" inside the TestMapFunction");
 
