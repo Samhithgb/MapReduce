@@ -1,3 +1,7 @@
+import workerstate.WorkerInfo;
+import workerstate.WorkerState;
+import workerstate.WorkerType;
+
 public class WorkerInfoBuilder {
     WorkerInfo info;
 

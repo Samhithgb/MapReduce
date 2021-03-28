@@ -1,3 +1,5 @@
+import workerstate.WorkerState;
+
 import java.io.*;
 import java.net.Socket;
 import java.util.Base64;

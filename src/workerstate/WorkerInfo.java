@@ -1,3 +1,5 @@
+package workerstate;
+
 public class WorkerInfo {
 
     private int workerId;
@@ -11,7 +13,7 @@ public class WorkerInfo {
         this.state = state;
     }
 
-    WorkerInfo(){}
+    public WorkerInfo(){}
 
     public WorkerType getType() {
         return type;
