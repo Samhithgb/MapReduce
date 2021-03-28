@@ -40,9 +40,9 @@ public class Worker {
             HashMap<String, String> resultFromMapper =  (HashMap<String, String>) deserialize(res);
 
 
-            out.println(" :running... hashmap output=" + resultFromMapper);
+            // out.println(" :running... hashmap output=" + resultFromMapper);
             String filePaths = AssignIntermediateFilesAndReturnFileLocations(resultFromMapper);
-            out.println("filePaths: "+ filePaths);
+            // out.println("filePaths returned from worker: "+ filePaths);
             out.flush();
             sendState(WorkerState.DONE,out);
           
@@ -67,30 +67,41 @@ public class Worker {
 
     private static String AssignIntermediateFilesAndReturnFileLocations(HashMap<String, String> resultFromMapper) throws IOException {
         int num_of_reducers = 3;
-        File myObj1 = new File("filename1.txt");
-        File myObj2 = new File("filename2.txt");
-        File myObj3 = new File("filename3.txt");
 
-        FileWriter myWriter1 = new FileWriter("filename1.txt");
-        FileWriter myWriter2 = new FileWriter("filename2.txt");
-        FileWriter myWriter3 = new FileWriter("filename3.txt");
+        File[] fileObjArray = new File[num_of_reducers];
+        FileWriter[] myWriterArray = new FileWriter[num_of_reducers];
+        String[] fileNames = new String[num_of_reducers];
+
+        for(int i=0;i<num_of_reducers;i++) {
+            fileNames[i] = "filename" + (i+1) + ".txt";
+            fileObjArray[i] = new File(fileNames[i]);
+        }
+
+        for(int i=0;i<num_of_reducers;i++) {
+            myWriterArray[i] = new FileWriter(fileNames[i]);
+        }
 
         for (String i : resultFromMapper.keySet()) {
-            System.out.println("key: " + i + " value: " + resultFromMapper.get(i));
+            // System.out.println("key: " + i + " value: " + resultFromMapper.get(i));
             if(i.charAt(0) < 'g') {
-                myWriter1.write(i + " = " +  resultFromMapper.get(i));
+                myWriterArray[0].write(i + " = " +  resultFromMapper.get(i));
             } else if (i.charAt(0) < 'p') {
-                myWriter2.write(i + " = " +  resultFromMapper.get(i));
+                myWriterArray[1].write(i + " = " +  resultFromMapper.get(i));
             } else {
-                myWriter3.write(i + " = " +  resultFromMapper.get(i));
+                myWriterArray[2].write(i + " = " +  resultFromMapper.get(i));
             }
         }
 
-        myWriter1.close();
-        myWriter2.close();
-        myWriter3.close();
+//        System.out.println("");
+//        System.out.println("Sending the file names to master: ");
+        for(int i=0;i<num_of_reducers;i++) {
+            myWriterArray[i].close();
+            System.out.println(fileNames[i]);
+        }
+//        System.out.println("Sent file names to master :)");
+        System.out.println("");
 
-        return "filename1.txt , filename2.txt , filename3.txt";
+        return fileNames.toString();
     }
 
     /**

@@ -52,7 +52,10 @@ class Master {
 
                 while ((line = reader.readLine()) != null) {
                     //TODO : Error has happened. For Milestone 1, ignoring the error and simply updating a state. Fault tolerance to be implemented for upcoming milestones.
-                    System.out.println("Error " + line);
+                    if(line.contains("filename")) {
+                        System.out.println("Master received the following file path from worker: ");
+                    }
+                    System.out.println(line);
                     isError = true;
                 }
                 // socket object to receive incoming client

@@ -1,22 +1,38 @@
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Base64;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
 
 public class TestMapFunction implements MapReduceFunction<String, String> {
     @Override
-    public String apply(String s) {
-        System.out.println(" inside the TestMapFunction");
-
-        HashMap<String, String> haspmap = new HashMap<String, String>();
-        haspmap.put("england", "1");
-        haspmap.put("nepal", "2");
-        haspmap.put("yoo", "3");
+    public String apply(String filePath) {
+        HashMap<String, String> map = new HashMap<String, String>();
 
         try {
-            return serialize(haspmap);
+            List<String> lines = Files.readAllLines(Paths.get(filePath), StandardCharsets.UTF_8);
+            String input = String.join(" ", lines).toLowerCase();
+
+            if (input != null) {
+                String[] separatedWords = input.split(" ");
+                for (String str: separatedWords) {
+                    if (map.containsKey(str)) {
+                        int count = Integer.parseInt(map.get(str));
+                        map.put(str, String.valueOf(count + 1));
+                    } else {
+                        map.put(str, "1");
+                    }
+                }
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        try {
+            return serialize(map);
         } catch (IOException e) {
             e.printStackTrace();
         }
