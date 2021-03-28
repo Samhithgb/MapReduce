@@ -27,3 +27,7 @@ Notes :
 - The implementation currently arleady takes care of multiple worker processes and their communication of the states to master. The master periodically checks for the status of the workers
 
 
+Verification :  The test cases that are run include : 
+1. Word Count : Count the number of occurences of a word accross multiple files. 
+2. Character Count : Compute the character count of all the words occuring across all the input files. 
+3. Vowel Count : Compute the number of vowels occuring in all the words appeading across the input files
