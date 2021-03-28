@@ -8,12 +8,12 @@ For running all tests in the milestone 1, please checkout the project, and run t
 For Unix-based systems : \
 
 ```
-java *.java \
+java *.java 
 java RunTests <path_to>/input_data_paths.txt
 ```
 For Windows : 
 ```
-java *.java \
+java *.java 
 java RunTests <path_to>\input_data_paths.txt
 
 ```
