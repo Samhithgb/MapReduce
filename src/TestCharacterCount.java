@@ -3,7 +3,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.*;
 
-public class TestVowelCount {
+public class TestCharacterCount {
 
     static String configLocation = "./input_data_paths.txt";
 
@@ -39,16 +39,16 @@ public class TestVowelCount {
 
         String[] input_files = getInputDataList();
         System.out.println("You entered: " + Arrays.toString(input_files));
-        VowelCountMapFunction o = new VowelCountMapFunction();
+        CharacterCountMapFunction o = new CharacterCountMapFunction();
         int res = MapReduce.initialize(input_files, MapReduceFunction.makeSerializable(o), null);
         if (res == 0) {
-            verifyVowelCount();
+            verifyCharacterCount();
         } else {
             System.out.println("Failed with exit code: " + res + ". Try running in terminal/cmd ");
         }
     }
 
-    private static void verifyVowelCount() throws FileNotFoundException {
+    private static void verifyCharacterCount() throws FileNotFoundException {
         //Based on the input, the word counts outputted from the workers have to be as follows.
 
         String[] filenames = new String[]{"filename1.txt","filename3.txt"};
@@ -56,11 +56,11 @@ public class TestVowelCount {
 
         //construct expected HashMap with counts from input files.
         HashMap<String,Integer> expectedCounts = new HashMap<>();
-        expectedCounts.put("data",2);
-        expectedCounts.put("for",1);
-        expectedCounts.put("count",2);
-        expectedCounts.put("test",1);
-        expectedCounts.put("word",1);
+        expectedCounts.put("data",4);
+        expectedCounts.put("for",3);
+        expectedCounts.put("count",5);
+        expectedCounts.put("test",4);
+        expectedCounts.put("word",4);
 
         for(String i : filenames) {
             FileInputStream fis = new FileInputStream(i);
@@ -85,7 +85,6 @@ public class TestVowelCount {
                 throw new AssertionError("Counts don't match for " + i + ". Actual :" + actualCounts.get(i) + " Expected :" + expectedCounts.get(i));
             }
         }
-
         //no AssertionError thrown. Verification success.
         System.out.println("VERIFICATION SUCCESS");
     }

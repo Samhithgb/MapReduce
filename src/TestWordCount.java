@@ -39,7 +39,7 @@ public class TestWordCount {
 
         String[] input_files = getInputDataList();
         System.out.println("You entered: " + Arrays.toString(input_files));
-        WordCounMapFunction o = new WordCounMapFunction();
+        WordCountMapFunction o = new WordCountMapFunction();
         int res = MapReduce.initialize(input_files, MapReduceFunction.makeSerializable(o), null);
         if (res == 0) {
 
@@ -88,7 +88,7 @@ public class TestWordCount {
                 throw new AssertionError("Counts don't match for " + i + ". Actual :" + actualCounts.get(i) + " Expected :" + expectedCounts.get(i));
             }
         }
-
+        //no AssertionError thrown. Verification success.
         System.out.println("VERIFICATION SUCCESS");
     }
 }

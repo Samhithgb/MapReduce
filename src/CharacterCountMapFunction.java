@@ -3,10 +3,10 @@ import java.util.Base64;
 import java.util.HashMap;
 import java.util.Scanner;
 
-public class WordCounMapFunction implements MapReduceFunction<String, String> {
+public class CharacterCountMapFunction implements MapReduceFunction<String, String> {
     @Override
     public String apply(String s) {
-        HashMap<String,String> map = new HashMap<>();
+        HashMap<String, String> map = new HashMap<>();
         try {
             File myObj = new File(s);
             Scanner myReader = new Scanner(myObj);
@@ -14,11 +14,11 @@ public class WordCounMapFunction implements MapReduceFunction<String, String> {
                 String data = myReader.nextLine();
                 String[] array = data.split(" ");
 
-                for(String i : array){
-                    if(map.containsKey(i)) {
-                        map.put(i, String.valueOf(Integer.parseInt(map.getOrDefault(i,String.valueOf(1)))+1));
+                for (String i : array) {
+                    if (map.containsKey(i)) {
+                        //done. ignore.
                     } else {
-                        map.put(i,String.valueOf(1));
+                        map.put(i, String.valueOf(i.toCharArray().length));
                     }
                 }
             }
