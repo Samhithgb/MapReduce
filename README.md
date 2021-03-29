@@ -7,6 +7,11 @@ Design Document : https://docs.google.com/document/d/1hNqLwp2Pkl96p7PXzyFD9lZ7Ty
 
 # Milestone 1: 
 
+Initial Step : Please update input_data_paths.txt with the paths to the input files with each path being in a new line
+
+
+
+
 For running all tests in the milestone 1, please checkout the project, and run the following commands in the command line:  \
 
 
