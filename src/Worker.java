@@ -9,14 +9,12 @@ public class Worker {
 
     static String workerId;
 
-    private static String STATUS_UPDATE_FORMAT = "STATUS %s : %s : ";
-    private static String ERROR_STATUS_UPDATE_FORMAT = "STATUS %s : %s : %s";
-
+    private static String STATUS_UPDATE_FORMAT = "STATUS %s : %s ";
     // driver code
    public static void main(String[] args) throws InterruptedException {
         // establish a connection by providing host and port
         // number
-        Thread.sleep(1000);
+        Thread.sleep(100);  // removing this might break things
         try (Socket socket = new Socket("localhost", 1235)) {
             // writing to server
 
@@ -32,6 +30,7 @@ public class Worker {
 
             try {
                 String file_path = args[1];
+//                Thread.sleep(5000); // uncomment to test if processes run in parallel
                 MapReduceFunction<String, String> func;
                 func = functionFromString(args[2]);
                 String res = func.apply(file_path);
@@ -48,7 +47,8 @@ public class Worker {
                 sendState(WorkerState.DONE, out);
             } catch (Exception e) {
                 e.printStackTrace();
-                sendState(WorkerState.ERROR, e, out);
+//                sendState(WorkerState.ERROR, e, out);
+                sendState(WorkerState.ERROR, out);
             }
           
         } catch (IOException e) {
@@ -59,14 +59,7 @@ public class Worker {
         static void sendState(WorkerState state, PrintWriter out){
         out.println(String.format(STATUS_UPDATE_FORMAT,workerId,state.toString()));
         }
-        static void sendState(WorkerState state, Exception e, PrintWriter out){
-            StringWriter sw = new StringWriter();
-            PrintWriter pw = new PrintWriter(sw);
-            e.printStackTrace(pw);
-            String sStackTrace = sw.toString(); // stack trace as a string
-            System.out.println(sStackTrace);
-            out.println(String.format(ERROR_STATUS_UPDATE_FORMAT,workerId,state.toString(), sStackTrace));
-        }
+
 
     private static Object deserialize(String s) throws IOException,
             ClassNotFoundException {
