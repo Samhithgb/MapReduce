@@ -9,7 +9,8 @@ public class Worker {
 
     static String workerId;
 
-    private static String STATUS_UPDATE_FORMAT = "STATUS %s : %s";
+    private static String STATUS_UPDATE_FORMAT = "STATUS %s : %s : ";
+    private static String ERROR_STATUS_UPDATE_FORMAT = "STATUS %s : %s : %s";
 
     // driver code
    public static void main(String[] args) throws InterruptedException {
@@ -29,30 +30,42 @@ public class Worker {
                         workerId = args[0];
             sendState(WorkerState.RUNNING,out);
 
+            try {
+                String file_path = args[1];
+                MapReduceFunction<String, String> func;
+                func = functionFromString(args[2]);
+                String res = func.apply(file_path);
+                // String res = Worker.apply(file_path);
 
-            String file_path = args[1];
-            MapReduceFunction<String, String> func;
-            func = functionFromString(args[2]);
-            String res = func.apply(file_path);
-            // String res = Worker.apply(file_path);
-
-            @SuppressWarnings("unchecked")
-            HashMap<String, String> resultFromMapper =  (HashMap<String, String>) deserialize(res);
+                @SuppressWarnings("unchecked")
+                HashMap<String, String> resultFromMapper = (HashMap<String, String>) deserialize(res);
 
 
-            // out.println(" :running... hashmap output=" + resultFromMapper);
-            String filePaths = AssignIntermediateFilesAndReturnFileLocations(resultFromMapper);
-            // out.println("filePaths returned from worker: "+ filePaths);
-            out.flush();
-            sendState(WorkerState.DONE,out);
+                // out.println(" :running... hashmap output=" + resultFromMapper);
+                String filePaths = AssignIntermediateFilesAndReturnFileLocations(resultFromMapper);
+                // out.println("filePaths returned from worker: "+ filePaths);
+                out.flush();
+                sendState(WorkerState.DONE, out);
+            } catch (Exception e) {
+                e.printStackTrace();
+                sendState(WorkerState.ERROR, e, out);
+            }
           
-        } catch (IOException | ClassNotFoundException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
         static void sendState(WorkerState state, PrintWriter out){
         out.println(String.format(STATUS_UPDATE_FORMAT,workerId,state.toString()));
+        }
+        static void sendState(WorkerState state, Exception e, PrintWriter out){
+            StringWriter sw = new StringWriter();
+            PrintWriter pw = new PrintWriter(sw);
+            e.printStackTrace(pw);
+            String sStackTrace = sw.toString(); // stack trace as a string
+            System.out.println(sStackTrace);
+            out.println(String.format(ERROR_STATUS_UPDATE_FORMAT,workerId,state.toString(), sStackTrace));
         }
 
     private static Object deserialize(String s) throws IOException,
