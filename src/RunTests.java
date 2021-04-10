@@ -12,16 +12,8 @@ public class RunTests {
         for(String i : testFileList) {
             String[] command = new String[]{"java" , i , configFile};
 
-            ProcessBuilder pb = new ProcessBuilder(command);
-            pb.redirectErrorStream(true);
+            ProcessBuilder pb = new ProcessBuilder(command).inheritIO();
             Process p = pb.start();
-            BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
-            String line;
-
-            while ((line = reader.readLine()) != null) {
-                System.out.println(line);
-            }
-
             p.waitFor();
             if(p.exitValue()!=0){
                 throw new AssertionError("Error while verificaiton");

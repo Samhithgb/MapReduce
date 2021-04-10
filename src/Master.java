@@ -34,12 +34,9 @@ class Master {
             int counter = 1;
             for (String inp : inputs) {
                 String[] startOptions = new String[]{"java", "-cp", ".", "Worker", String.valueOf(counter++), inp, func};
-
-                ProcessBuilder pb = new ProcessBuilder(startOptions);
-                pb.redirectErrorStream(true);
+                // inheritIO redirects all child process streams to this process
+                ProcessBuilder pb = new ProcessBuilder(startOptions).inheritIO();
                 Process p = pb.start();
-                BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
-                String line;
 
                 WorkerInfo info = new WorkerInfoBuilder().setWorkerProcess(p)
                         .setWorkerState(WorkerState.RUNNING)
@@ -50,14 +47,8 @@ class Master {
                 sWorkers.add(info);
                 System.out.println("Number of processes : " + sWorkers.size());
 
-                while ((line = reader.readLine()) != null) {
-                    //TODO : Error has happened. For Milestone 1, ignoring the error and simply updating a state. Fault tolerance to be implemented for upcoming milestones.
-                    if(line.contains("filename")) {
-                        System.out.println("Master received the following file path from worker: ");
-                    }
-                    System.out.println(line);
-                    isError = true;
-                }
+                isError = true;
+
                 // socket object to receive incoming client
                 // requests
                 Socket client = server.accept();
@@ -101,17 +92,25 @@ class Master {
         @Override
         public void run() {
             boolean isDone = true;
+            boolean isError = true;
             synchronized (sWorkers) {
                 for(WorkerInfo i : sWorkers) {
                     if(i.getState() != WorkerState.DONE){
                         isDone = false;
-                        break;
+                    }
+                    if(i.getState() != WorkerState.ERROR){
+                        isError = false;
                     }
                 }
             }
             if(isDone){
                 //TODO : Once reducers are implemented, take care of launching them from here
                 System.exit(0);
+            }
+            else if(isError){
+                // exit status 1 if error occurs in worker
+                System.out.println("Error while running UDF");
+                System.exit(1);
             }
 
         }
@@ -148,10 +147,10 @@ class Master {
                             String[] two = line.split(":");
                             WorkerState status = WorkerState.valueOf(two[1].trim());
                             int id = Integer.parseInt(two[0].split(" ")[1]);
-                            WorkerInfo info = sWorkers.get(id-1);
+                            WorkerInfo info = sWorkers.get(id - 1);
                             info.setState(status);
-
                             System.out.println("Status update received for Worker : " + id + " " + status.toString());
+
                         }
                 }
             } catch (IOException e) {

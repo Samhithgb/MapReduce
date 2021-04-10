@@ -9,13 +9,12 @@ public class Worker {
 
     static String workerId;
 
-    private static String STATUS_UPDATE_FORMAT = "STATUS %s : %s";
-
+    private static String STATUS_UPDATE_FORMAT = "STATUS %s : %s ";
     // driver code
    public static void main(String[] args) throws InterruptedException {
         // establish a connection by providing host and port
         // number
-        Thread.sleep(1000);
+        Thread.sleep(100);  // removing this might break things
         try (Socket socket = new Socket("localhost", 1235)) {
             // writing to server
 
@@ -29,24 +28,30 @@ public class Worker {
                         workerId = args[0];
             sendState(WorkerState.RUNNING,out);
 
+            try {
+                String file_path = args[1];
+//                Thread.sleep(5000); // uncomment to test if processes run in parallel
+                MapReduceFunction<String, String> func;
+                func = functionFromString(args[2]);
+                String res = func.apply(file_path);
+                // String res = Worker.apply(file_path);
 
-            String file_path = args[1];
-            MapReduceFunction<String, String> func;
-            func = functionFromString(args[2]);
-            String res = func.apply(file_path);
-            // String res = Worker.apply(file_path);
-
-            @SuppressWarnings("unchecked")
-            HashMap<String, String> resultFromMapper =  (HashMap<String, String>) deserialize(res);
+                @SuppressWarnings("unchecked")
+                HashMap<String, String> resultFromMapper = (HashMap<String, String>) deserialize(res);
 
 
-            // out.println(" :running... hashmap output=" + resultFromMapper);
-            String filePaths = AssignIntermediateFilesAndReturnFileLocations(resultFromMapper);
-            // out.println("filePaths returned from worker: "+ filePaths);
-            out.flush();
-            sendState(WorkerState.DONE,out);
+                // out.println(" :running... hashmap output=" + resultFromMapper);
+                String filePaths = AssignIntermediateFilesAndReturnFileLocations(resultFromMapper);
+                // out.println("filePaths returned from worker: "+ filePaths);
+                out.flush();
+                sendState(WorkerState.DONE, out);
+            } catch (Exception e) {
+                e.printStackTrace();
+//                sendState(WorkerState.ERROR, e, out);
+                sendState(WorkerState.ERROR, out);
+            }
           
-        } catch (IOException | ClassNotFoundException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
@@ -54,6 +59,7 @@ public class Worker {
         static void sendState(WorkerState state, PrintWriter out){
         out.println(String.format(STATUS_UPDATE_FORMAT,workerId,state.toString()));
         }
+
 
     private static Object deserialize(String s) throws IOException,
             ClassNotFoundException {
