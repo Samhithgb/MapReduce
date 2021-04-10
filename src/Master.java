@@ -5,9 +5,7 @@ import workerstate.WorkerType;
 import java.io.*;
 import java.net.*;
 import java.sql.Time;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -19,11 +17,16 @@ class Master {
 
     private static boolean isError = false;
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException, ClassNotFoundException {
         ServerSocket server = null;
         String[] inputs = args[0].split(",");
         String func = args[1];
         System.out.println("Master running");
+
+        @SuppressWarnings("unchecked")
+        HashMap<String, String> configMap = (HashMap<String, String>) deserialize(args[2]);
+
+
         try {
 
             // server is listening on port 1234
@@ -32,8 +35,11 @@ class Master {
 
             // client request
             int counter = 1;
+            int num_of_workers = Integer.parseInt(configMap.get("num_of_workers"));
+            System.out.println("num of workers acc to config file = "+num_of_workers);
+
             for (String inp : inputs) {
-                String[] startOptions = new String[]{"java", "-cp", ".", "Worker", String.valueOf(counter++), inp, func};
+                String[] startOptions = new String[]{"java", "-cp", configMap.get("worker_class_directory"), "Worker", String.valueOf(counter++), inp, func, toString(configMap)};
                 // inheritIO redirects all child process streams to this process
                 ProcessBuilder pb = new ProcessBuilder(startOptions).inheritIO();
                 Process p = pb.start();
@@ -85,6 +91,27 @@ class Master {
                 }
             }
         }
+    }
+
+    private static Object deserialize(String s) throws IOException,
+            ClassNotFoundException {
+        byte[] data = Base64.getDecoder().decode(s);
+        ObjectInputStream ois = new ObjectInputStream(
+                new ByteArrayInputStream(data));
+        Object o = ois.readObject();
+        ois.close();
+        return o;
+    }
+
+    /**
+     * Write the object to a Base64 string.
+     */
+    private static String toString(Serializable o) throws IOException {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ObjectOutputStream oos = new ObjectOutputStream(baos);
+        oos.writeObject(o);
+        oos.close();
+        return Base64.getEncoder().encodeToString(baos.toByteArray());
     }
 
     private static class PeriodicTask implements Runnable {

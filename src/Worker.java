@@ -37,11 +37,15 @@ public class Worker {
                 // String res = Worker.apply(file_path);
 
                 @SuppressWarnings("unchecked")
+                HashMap<String, String> configMap = (HashMap<String, String>) deserialize(args[3]);
+
+
+                @SuppressWarnings("unchecked")
                 HashMap<String, String> resultFromMapper = (HashMap<String, String>) deserialize(res);
 
 
                 // out.println(" :running... hashmap output=" + resultFromMapper);
-                String filePaths = AssignIntermediateFilesAndReturnFileLocations(resultFromMapper);
+                String filePaths = AssignIntermediateFilesAndReturnFileLocations(resultFromMapper, configMap);
                 // out.println("filePaths returned from worker: "+ filePaths);
                 out.flush();
                 sendState(WorkerState.DONE, out);
@@ -71,8 +75,8 @@ public class Worker {
         return o;
     }
 
-    private static String AssignIntermediateFilesAndReturnFileLocations(HashMap<String, String> resultFromMapper) throws IOException {
-        int num_of_reducers = 3;
+    private static String AssignIntermediateFilesAndReturnFileLocations(HashMap<String, String> resultFromMapper, HashMap<String, String> configMap) throws IOException {
+        int num_of_reducers = Integer.parseInt(configMap.get("num_of_reducers"));
 
         File[] fileObjArray = new File[num_of_reducers];
         FileWriter[] myWriterArray = new FileWriter[num_of_reducers];

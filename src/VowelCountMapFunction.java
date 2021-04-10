@@ -12,7 +12,7 @@ public class VowelCountMapFunction implements MapReduceFunction<String, String> 
         vowels.add('o');
         vowels.add('u');
         // intentional error
-        int a = 3/0;
+        int a = 3/1;
 
         try {
             File myObj = new File(s);

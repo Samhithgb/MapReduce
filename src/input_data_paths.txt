@@ -1,2 +1,2 @@
-/Users/ssrigiri/umass/532/Homeworks/Project_1/p1_mapreduce-team-88/inputData/input_1.txt
-/Users/ssrigiri/umass/532/Homeworks/Project_1/p1_mapreduce-team-88/inputData/input_2.txt
+/Users/ssrigiri/umass/532/Homeworks/project-1/p1_mapreduce-team-88/inputData/input_1.txt
+/Users/ssrigiri/umass/532/Homeworks/project-1/p1_mapreduce-team-88/inputData/input_2.txt

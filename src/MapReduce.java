@@ -1,15 +1,14 @@
 import java.io.*;
-import java.net.ServerSocket;
-import java.net.Socket;
 import java.util.Base64;
+import java.util.Map;
 
 public class MapReduce implements Serializable {
-    static int initialize(String[] source, MapReduceFunction<?, ?> mapFunction, MapReduceFunction<?, ?> reduceFunction) throws IOException, InterruptedException {
+    static int initialize(String[] source, MapReduceFunction<?, ?> mapFunction, MapReduceFunction<?, ?> reduceFunction, Map<String,String> configMap) throws IOException, InterruptedException {
         System.out.println("MapReduce.map running");
 
         // Launch master with necessary arguments
         String master_input = String.join(",", source);
-        String[] startOptions = new String[]{"java", "-cp", ".", "Master", master_input, toString(mapFunction)};
+        String[] startOptions = new String[]{"java", "-cp", configMap.get("worker_class_directory"), "Master", master_input, toString(mapFunction), toString((Serializable) configMap)};
         ProcessBuilder pb = new ProcessBuilder(startOptions);
         pb.redirectErrorStream(true);
         pb.redirectOutput(ProcessBuilder.Redirect.INHERIT);

@@ -1,16 +1,18 @@
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.*;
 
 public class TestWordCount {
 
     static String configLocation = "./input_data_paths.txt";
 
-    public static String[] getInputDataList() {
+    public static String[] getInputDataList(String location) {
         List<String> list=new ArrayList<String>();
 
         try
         {
-            FileInputStream fis=new FileInputStream(configLocation);
+            FileInputStream fis=new FileInputStream(location);
             Scanner sc=new Scanner(fis);
             while(sc.hasNextLine())
             {
@@ -31,18 +33,33 @@ public class TestWordCount {
 
 
     public static void main(String[] args) throws IOException, InterruptedException {
-        int number = 5;
+//        int number = 5;
 
         configLocation = args[0];
+
+        Map<String,String> configMap = new HashMap<String,String>();
+        configMap.put("configLocation", configLocation);
+        String content = new String ( Files.readAllBytes( Paths.get(configLocation) ) );
+        String[] splitted = content.split("\n");
+        for(String aa: splitted){
+            String temp[] = aa.split("=");
+            configMap.put(temp[0], temp[1]);
+        }
+        System.out.println(configMap);
+
+
         System.out.println("RUNNING WORD COUNT VERIFICATION");
-        String[] input_files = getInputDataList();
+        String[] input_files = getInputDataList(configMap.get("input_data_locations"));
         System.out.println("You entered: " + Arrays.toString(input_files));
         WordCountMapFunction o = new WordCountMapFunction();
-        int res = MapReduce.initialize(input_files, MapReduceFunction.makeSerializable(o), null);
+
+
+
+
+        int res = MapReduce.initialize(input_files, MapReduceFunction.makeSerializable(o), null, configMap);
         if (res == 0) {
 
             verifyWordCount();
-
 
         } else {
             System.out.println("Failed with exit code: " + res + ". Try running in terminal/cmd ");

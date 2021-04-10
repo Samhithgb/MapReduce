@@ -1,16 +1,18 @@
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.*;
 
 public class TestVowelCount {
 
     static String configLocation = "./input_data_paths.txt";
 
-    public static String[] getInputDataList() {
+    public static String[] getInputDataList(String location) {
         List<String> list=new ArrayList<String>();
 
         try
         {
-            FileInputStream fis=new FileInputStream(configLocation);
+            FileInputStream fis=new FileInputStream(location);
             Scanner sc=new Scanner(fis);
             while(sc.hasNextLine())
             {
@@ -35,10 +37,23 @@ public class TestVowelCount {
         System.out.println("RUNNING VOWEL COUNT VERIFICATION");
         configLocation = args[0];
 
-        String[] input_files = getInputDataList();
+
+        Map<String,String> configMap = new HashMap<String,String>();
+        configMap.put("configLocation", configLocation);
+        String content = new String ( Files.readAllBytes( Paths.get(configLocation) ) );
+        String[] splitted = content.split("\n");
+        for(String aa: splitted){
+            String temp[] = aa.split("=");
+            configMap.put(temp[0], temp[1]);
+        }
+        System.out.println(configMap);
+
+
+        String[] input_files = getInputDataList(configMap.get("input_data_locations"));
         System.out.println("You entered: " + Arrays.toString(input_files));
         VowelCountMapFunction o = new VowelCountMapFunction();
-        int res = MapReduce.initialize(input_files, MapReduceFunction.makeSerializable(o), null);
+
+        int res = MapReduce.initialize(input_files, MapReduceFunction.makeSerializable(o), null, configMap);
         if (res == 0) {
             verifyVowelCount();
         } else {
