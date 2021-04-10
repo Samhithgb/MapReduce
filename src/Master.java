@@ -39,7 +39,7 @@ class Master {
             System.out.println("num of workers acc to config file = "+num_of_workers);
 
             for (String inp : inputs) {
-                String[] startOptions = new String[]{"java", "-cp", configMap.get("worker_class_directory"), "Worker", String.valueOf(counter++), inp, func, toString(configMap)};
+                String[] startOptions = new String[]{"java", "-cp", configMap.get("worker_class_directory"), "Worker", String.valueOf(counter++), inp, func, toString((Serializable) configMap)};
                 // inheritIO redirects all child process streams to this process
                 ProcessBuilder pb = new ProcessBuilder(startOptions).inheritIO();
                 Process p = pb.start();
