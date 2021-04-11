@@ -14,7 +14,7 @@ public class Worker {
    public static void main(String[] args) throws InterruptedException {
         // establish a connection by providing host and port
         // number
-        Thread.sleep(100);  // removing this might break things
+        Thread.sleep(1000);  // removing this might break things
         try (Socket socket = new Socket("localhost", 1235)) {
             // writing to server
 
@@ -29,9 +29,17 @@ public class Worker {
             sendState(WorkerState.RUNNING,out);
 
             try {
+
+                for(String i : args){
+                    System.out.println(i);
+                }
+
+
                 String file_path = args[1];
 //                Thread.sleep(5000); // uncomment to test if processes run in parallel
                 MapReduceFunction<String, String> func;
+
+                System.out.println(args[2]);
                 func = functionFromString(args[2]);
                 String res = func.apply(file_path);
                 // String res = Worker.apply(file_path);
@@ -44,10 +52,13 @@ public class Worker {
                 HashMap<String, String> resultFromMapper = (HashMap<String, String>) deserialize(res);
 
                 boolean isMapper = args[4].equalsIgnoreCase("M");
+                System.out.println(args[4]);
 
                 if(isMapper) {
+                    System.out.println("Reducer. Outputting");
                     String filePaths = AssignIntermediateFilesAndReturnFileLocations(resultFromMapper, configMap);
                 } else {
+                    System.out.println("Reducer. Outputting");
                     generateOutPutFile(resultFromMapper);
                 }
                 // out.println("filePaths returned from worker: "+ filePaths);
@@ -94,7 +105,7 @@ public class Worker {
     }
 
     private static String AssignIntermediateFilesAndReturnFileLocations(HashMap<String, String> resultFromMapper, HashMap<String, String> configMap) throws IOException {
-        int num_of_reducers = Integer.parseInt(configMap.get("num_of_reducers"));
+        int num_of_reducers = Integer.parseInt(configMap.get("num_of_reducers").trim());
 
         File[] fileObjArray = new File[num_of_reducers];
         FileWriter[] myWriterArray = new FileWriter[num_of_reducers];

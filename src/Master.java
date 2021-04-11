@@ -35,11 +35,12 @@ class Master {
 
             // client request
             int counter = 1;
-            int num_of_workers = Integer.parseInt(configMap.get("num_of_workers"));
+            System.out.println(configMap.get("num_of_workers"));
+            int num_of_workers = Integer.parseInt(configMap.get("num_of_workers").trim());
             System.out.println("num of workers acc to config file = "+num_of_workers);
 
             for (String inp : inputs) {
-                String[] startOptions = new String[]{"java", "-cp", configMap.get("worker_class_directory"), "Worker", String.valueOf(counter++), inp, mapfunc, toString((Serializable) configMap), "M"};
+                String[] startOptions = new String[]{"java", "-cp", System.getProperty("user.dir") + File.separator + "out" + File.separator + "production" + File.separator+ "project_folder", "Worker", String.valueOf(counter++), inp, mapfunc, toString((Serializable) configMap), "M"};
                 // inheritIO redirects all child process streams to this process
                 ProcessBuilder pb = new ProcessBuilder(startOptions).inheritIO();
                 Process p = pb.start();
@@ -78,13 +79,13 @@ class Master {
             ScheduledExecutorService scheduler
                     = Executors.newScheduledThreadPool(1);
             scheduler.scheduleAtFixedRate(new PeriodicTask(() -> {
-                scheduler.shutdown();
+               // scheduler.shutdown();
                 launchReducers(configMap, reduceFunction);
-            }),10, 10000, TimeUnit.MILLISECONDS);
+            }),10, 1000, TimeUnit.MILLISECONDS);
 
         } catch (IOException e) {
             e.printStackTrace();
-        } finally {
+        } /*finally {
             if (server != null) {
                 try {
                     server.close();
@@ -92,29 +93,31 @@ class Master {
                     e.printStackTrace();
                 }
             }
-        }
+        }*/
     }
 
     private static void launchReducers(HashMap<String, String> configMap, String reduceFunction){
+        System.out.println("Launcing recuders now");
         sWorkers.clear();
         int counter2 = 1;
         ServerSocket server2 = null;
 
         //Get all intermediate files
         File dir = new File(".");
-        File[] foundFiles = dir.listFiles((dir1, name) -> name.contains("worker_id_"));
+        File[] foundFiles = dir.listFiles((dir1, name) -> name.contains("worker_id"));
 
-        int number_of_reducers = Integer.parseInt(configMap.get("num_of_reducers"));
+        int number_of_reducers = Integer.parseInt(configMap.get("num_of_reducers").trim());
+
         for(int i=0 ; i < number_of_reducers ; i++) {
             String[] startOptions = new String[0];
             StringBuilder input_file_pattern = new StringBuilder();
             for(File file : foundFiles) {
                  if(file.getName().contains("_filename_" + i)){
-                     input_file_pattern.append(file.getName());
+                     input_file_pattern.append(file.getName()+",");
                  }
             }
             try {
-                startOptions = new String[]{"java", "-cp", configMap.get("worker_class_directory"), "Worker", String.valueOf(counter2++), input_file_pattern.toString(), reduceFunction, toString(configMap), "R"};
+                startOptions = new String[]{"java", "-cp", System.getProperty("user.dir") + File.separator + "out" + File.separator + "production" + File.separator+ "project_folder", "Worker", String.valueOf(counter2++), input_file_pattern.toString(), reduceFunction, toString((Serializable) configMap), "R"};
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -122,8 +125,9 @@ class Master {
             ProcessBuilder pb = new ProcessBuilder(startOptions).inheritIO();
             Process p;
             try {
-                p = pb.start();
 
+                p = pb.start();
+                System.out.println("Launched recuders now");
                 WorkerInfo info = new WorkerInfoBuilder().setWorkerProcess(p)
                         .setWorkerState(WorkerState.RUNNING)
                         .setWorkerType(WorkerType.REDUCER)
