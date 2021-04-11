@@ -43,7 +43,7 @@ class Master {
                 // inheritIO redirects all child process streams to this process
                 ProcessBuilder pb = new ProcessBuilder(startOptions).inheritIO();
                 Process p = pb.start();
-
+                System.out.println("This is a multi-process env and process info is "+ p);
                 WorkerInfo info = new WorkerInfoBuilder().setWorkerProcess(p)
                         .setWorkerState(WorkerState.RUNNING)
                         .setWorkerType(WorkerType.MAPPER)
