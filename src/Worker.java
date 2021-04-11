@@ -43,9 +43,13 @@ public class Worker {
                 @SuppressWarnings("unchecked")
                 HashMap<String, String> resultFromMapper = (HashMap<String, String>) deserialize(res);
 
+                boolean isMapper = args[4].equalsIgnoreCase("M");
 
-                // out.println(" :running... hashmap output=" + resultFromMapper);
-                String filePaths = AssignIntermediateFilesAndReturnFileLocations(resultFromMapper, configMap);
+                if(isMapper) {
+                    String filePaths = AssignIntermediateFilesAndReturnFileLocations(resultFromMapper, configMap);
+                } else {
+                    generateOutPutFile(resultFromMapper);
+                }
                 // out.println("filePaths returned from worker: "+ filePaths);
                 out.flush();
                 sendState(WorkerState.DONE, out);
@@ -59,6 +63,20 @@ public class Worker {
             e.printStackTrace();
         }
     }
+
+
+        static void generateOutPutFile(HashMap<String, String> resultFromReducer){
+            String fileName = "reducer_id_"+ workerId + "_output_.txt";
+            File outPutFile = new File(fileName);
+            try {
+                FileWriter writer = new FileWriter(outPutFile);
+                for (String i : resultFromReducer.keySet()) {
+                    writer.write(i + " = " + resultFromReducer.get(i) + '\n');
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
 
         static void sendState(WorkerState state, PrintWriter out){
         out.println(String.format(STATUS_UPDATE_FORMAT,workerId,state.toString()));

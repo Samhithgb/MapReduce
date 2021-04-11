@@ -8,7 +8,7 @@ public class MapReduce implements Serializable {
 
         // Launch master with necessary arguments
         String master_input = String.join(",", source);
-        String[] startOptions = new String[]{"java", "-cp", configMap.get("worker_class_directory"), "Master", master_input, toString(mapFunction), toString((Serializable) configMap)};
+        String[] startOptions = new String[]{"java", "-cp", configMap.get("worker_class_directory"), "Master", master_input, toString(mapFunction), toString((Serializable) configMap), toString(reduceFunction)};
         ProcessBuilder pb = new ProcessBuilder(startOptions);
         pb.redirectErrorStream(true);
         pb.redirectOutput(ProcessBuilder.Redirect.INHERIT);
