@@ -103,19 +103,25 @@ class Master {
         ServerSocket server2 = null;
 
         //Get all intermediate files
-        File dir = new File(".");
+        File dir = new File("./");
         File[] foundFiles = dir.listFiles((dir1, name) -> name.contains("worker_id"));
 
         int number_of_reducers = Integer.parseInt(configMap.get("num_of_reducers").trim());
 
-        for(int i=0 ; i < number_of_reducers ; i++) {
+        for(int i=1 ; i < number_of_reducers+1 ; i++) {
             String[] startOptions = new String[0];
             StringBuilder input_file_pattern = new StringBuilder();
             for(File file : foundFiles) {
-                 if(file.getName().contains("_filename_" + i)){
-                     input_file_pattern.append(file.getName()+",");
+
+                String filename = "_filename_%d";
+                System.out.println("filename = " + String.format(filename, i));
+                System.out.println("filename = " + file.getPath());
+                 if(file.getName().contains(String.format(filename, i))){
+                     System.out.println("FILE FOUND:" + file.getName());
+                     input_file_pattern.append("./").append(file.getName()).append(",");
                  }
             }
+            System.out.println("file pattern received = " + input_file_pattern.toString());
             try {
                 startOptions = new String[]{"java", "-cp", System.getProperty("user.dir") + File.separator + "out" + File.separator + "production" + File.separator+ "project_folder", "Worker", String.valueOf(counter2++), input_file_pattern.toString(), reduceFunction, toString((Serializable) configMap), "R"};
             } catch (IOException e) {

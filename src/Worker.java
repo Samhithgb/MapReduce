@@ -39,7 +39,7 @@ public class Worker {
 //                Thread.sleep(5000); // uncomment to test if processes run in parallel
                 MapReduceFunction<String, String> func;
 
-                System.out.println(args[2]);
+                System.out.println(file_path);
                 func = functionFromString(args[2]);
                 String res = func.apply(file_path);
                 // String res = Worker.apply(file_path);
