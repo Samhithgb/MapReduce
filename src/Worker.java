@@ -50,7 +50,10 @@ public class Worker {
 
                 @SuppressWarnings("unchecked")
                 HashMap<String, String> resultFromMapper = (HashMap<String, String>) deserialize(res);
-
+                System.out.println("this is in 53");
+                System.out.println(res);
+                System.out.println(resultFromMapper);
+                System.out.println("this is in 55");
                 boolean isMapper = args[4].equalsIgnoreCase("M");
                 System.out.println(args[4]);
 
@@ -77,12 +80,13 @@ public class Worker {
 
 
         static void generateOutPutFile(HashMap<String, String> resultFromReducer){
+       System.out.println(resultFromReducer+" waah chal");
             String fileName = "reducer_id_"+ workerId + "_output_.txt";
             File outPutFile = new File(fileName);
             try {
                 FileWriter writer = new FileWriter(outPutFile);
                 for (String i : resultFromReducer.keySet()) {
-                    writer.write(i + " = " + resultFromReducer.get(i) + '\n');
+                    writer.write(i + "=" + resultFromReducer.get(i) + '\n');
                 }
             } catch (IOException e) {
                 e.printStackTrace();
@@ -123,11 +127,11 @@ public class Worker {
         for (String i : resultFromMapper.keySet()) {
             // System.out.println("key: " + i + " value: " + resultFromMapper.get(i));
             if(i.charAt(0) < 'g') {
-                myWriterArray[0].write(i + " = " +  resultFromMapper.get(i) + '\n');
+                myWriterArray[0].write(i + "=" +  resultFromMapper.get(i) + '\n');
             } else if (i.charAt(0) < 'p') {
-                myWriterArray[1].write(i + " = " +  resultFromMapper.get(i) + '\n');
+                myWriterArray[1].write(i + "=" +  resultFromMapper.get(i) + '\n');
             } else {
-                myWriterArray[2].write(i + " = " +  resultFromMapper.get(i) + '\n');
+                myWriterArray[2].write(i + "=" +  resultFromMapper.get(i) + '\n');
             }
         }
 
