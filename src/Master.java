@@ -14,7 +14,6 @@ import java.util.concurrent.TimeUnit;
 class Master {
 
     private static final List<WorkerInfo> sWorkers = Collections.synchronizedList(new ArrayList<>());
-    private static final List<String> intermediateFiles = Collections.synchronizedList(new ArrayList<>());
 
     private static boolean isError = false;
 
@@ -256,10 +255,6 @@ class Master {
                             System.out.println("Status update received for Worker : " + id + " " + status.toString());
 
                         }
-                        if(line.contains("filename")) {
-                            intermediateFiles.add(line);
-                        }
-                        System.out.println("Intermediate files : " + intermediateFiles.size());
                         isError = true;
                 }
             } catch (IOException e) {
