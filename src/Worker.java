@@ -14,7 +14,7 @@ public class Worker {
    public static void main(String[] args) throws InterruptedException {
         // establish a connection by providing host and port
         // number
-        Thread.sleep(100);  // removing this might break things
+        Thread.sleep(1000);  // removing this might break things
         try (Socket socket = new Socket("localhost", 1235)) {
             // writing to server
 
@@ -32,6 +32,7 @@ public class Worker {
                 String file_path = args[1];
 //                Thread.sleep(5000); // uncomment to test if processes run in parallel
                 MapReduceFunction<String, String> func;
+
                 func = functionFromString(args[2]);
                 String res = func.apply(file_path);
                 // String res = Worker.apply(file_path);
@@ -43,14 +44,24 @@ public class Worker {
                 @SuppressWarnings("unchecked")
                 HashMap<String, String> resultFromMapper = (HashMap<String, String>) deserialize(res);
 
+                if(resultFromMapper!=null || resultFromMapper.isEmpty()){
+                    System.out.println("Empty result received");
+                }
 
-                // out.println(" :running... hashmap output=" + resultFromMapper);
-                String filePaths = AssignIntermediateFilesAndReturnFileLocations(resultFromMapper, configMap);
+                boolean isMapper = args[4].equalsIgnoreCase("M");
+
+                if(isMapper) {
+                    System.out.println("Mapper. Generating intermediate files");
+                    String filePaths = AssignIntermediateFilesAndReturnFileLocations(resultFromMapper, configMap);
+                } else {
+                    System.out.println("Reducer. Outputting");
+                    generateOutPutFile(resultFromMapper);
+                }
                 // out.println("filePaths returned from worker: "+ filePaths);
                 out.flush();
                 sendState(WorkerState.DONE, out);
             } catch (Exception e) {
-                e.printStackTrace();
+                  e.printStackTrace();
 //                sendState(WorkerState.ERROR, e, out);
                 sendState(WorkerState.ERROR, out);
             }
@@ -60,8 +71,30 @@ public class Worker {
         }
     }
 
+
+        static void generateOutPutFile(HashMap<String, String> resultFromReducer) throws IOException {
+            String fileName = "reducer_id_"+ workerId + "_output_.txt";
+            File outPutFile = new File(fileName);
+            FileWriter writer = null;
+
+            if(resultFromReducer.isEmpty()){
+                System.out.println("No output generated. Will result in an empty file");
+            }
+
+            try {
+                writer = new FileWriter(outPutFile);
+                for (String i : resultFromReducer.keySet()) {
+                    writer.write(i + "=" + resultFromReducer.get(i) + '\n');
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            } finally {
+                if(writer!=null) writer.close();
+            }
+        }
+
         static void sendState(WorkerState state, PrintWriter out){
-        out.println(String.format(STATUS_UPDATE_FORMAT,workerId,state.toString()));
+            out.println(String.format(STATUS_UPDATE_FORMAT,workerId,state.toString()));
         }
 
 
@@ -76,7 +109,7 @@ public class Worker {
     }
 
     private static String AssignIntermediateFilesAndReturnFileLocations(HashMap<String, String> resultFromMapper, HashMap<String, String> configMap) throws IOException {
-        int num_of_reducers = Integer.parseInt(configMap.get("num_of_reducers"));
+        int num_of_reducers = Integer.parseInt(configMap.get("num_of_reducers").trim());
 
         File[] fileObjArray = new File[num_of_reducers];
         FileWriter[] myWriterArray = new FileWriter[num_of_reducers];
@@ -92,24 +125,19 @@ public class Worker {
         }
 
         for (String i : resultFromMapper.keySet()) {
-            // System.out.println("key: " + i + " value: " + resultFromMapper.get(i));
             if(i.charAt(0) < 'g') {
-                myWriterArray[0].write(i + " = " +  resultFromMapper.get(i) + '\n');
+                myWriterArray[0].write(i + "=" +  resultFromMapper.get(i) + '\n');
             } else if (i.charAt(0) < 'p') {
-                myWriterArray[1].write(i + " = " +  resultFromMapper.get(i) + '\n');
+                myWriterArray[1].write(i + "=" +  resultFromMapper.get(i) + '\n');
             } else {
-                myWriterArray[2].write(i + " = " +  resultFromMapper.get(i) + '\n');
+                myWriterArray[2].write(i + "=" +  resultFromMapper.get(i) + '\n');
             }
         }
 
-//        System.out.println("");
-//        System.out.println("Sending the file names to master: ");
         for(int i=0;i<num_of_reducers;i++) {
             myWriterArray[i].close();
-            System.out.println(fileNames[i]);
         }
-//        System.out.println("Sent file names to master :)");
-        System.out.println("");
+
 
         return fileNames.toString();
     }
@@ -126,6 +154,7 @@ public class Worker {
         try {
             o = (MapReduceFunction<String, String>) ois.readObject();
         } catch (ClassCastException e) {
+            e.printStackTrace();
             o = null;
         }
         ois.close();
@@ -133,7 +162,6 @@ public class Worker {
     }
 
     public static String apply(String s) { // for testing purposes only
-        System.out.println(" inside the TestMapFunction");
 
         HashMap<String, String> haspmap = new HashMap<String, String>();
         haspmap.put("aa", "1");

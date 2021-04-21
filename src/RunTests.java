@@ -1,4 +1,5 @@
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
@@ -8,10 +9,9 @@ public class RunTests {
         configFile = args[0];
 
         String [] testFileList = {"TestCharacterCount", "TestWordCount", "TestVowelCount"};
-
         for(String i : testFileList) {
-            String[] command = new String[]{"java" , i , configFile};
-
+            System.out.println("Working Directory = " + System.getProperty("user.dir"));
+            String[] command = new String[]{"java" , "-cp", System.getProperty("user.dir") + File.separator + "out" + File.separator + "production" + File.separator+ "project_folder" ,"TestCharacterCount", configFile};
             ProcessBuilder pb = new ProcessBuilder(command).inheritIO();
             Process p = pb.start();
             p.waitFor();

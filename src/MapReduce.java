@@ -8,20 +8,9 @@ public class MapReduce implements Serializable {
 
         // Launch master with necessary arguments
         String master_input = String.join(",", source);
-        String[] startOptions = new String[]{"java", "-cp", configMap.get("worker_class_directory"), "Master", master_input, toString(mapFunction), toString((Serializable) configMap)};
-        ProcessBuilder pb = new ProcessBuilder(startOptions);
-        pb.redirectErrorStream(true);
-        pb.redirectOutput(ProcessBuilder.Redirect.INHERIT);
+        String[] startOptions = new String[]{"java", "-cp", System.getProperty("user.dir") + File.separator + "out" + File.separator + "production" + File.separator+ "project_folder", "Master", master_input, toString(mapFunction), toString((Serializable) configMap), toString(reduceFunction)};
+        ProcessBuilder pb = new ProcessBuilder(startOptions).inheritIO();
         Process p = pb.start();
-
-
-        // Get output of process
-        BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
-        String line;
-        while ((line = reader.readLine()) != null) {
-            System.out.println("Here"+ line);
-        }
-
         // Wait for process to end
         p.waitFor();
         return p.exitValue();

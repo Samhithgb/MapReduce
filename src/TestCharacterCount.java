@@ -9,10 +9,9 @@ public class TestCharacterCount {
 
     public static String[] getInputDataList(String location) {
         List<String> list=new ArrayList<String>();
-
         try
         {
-            FileInputStream fis=new FileInputStream(location);
+            FileInputStream fis=new FileInputStream(location.trim());
             Scanner sc=new Scanner(fis);
             while(sc.hasNextLine())
             {
@@ -25,7 +24,7 @@ public class TestCharacterCount {
         }
         catch(IOException e)
         {
-            e.printStackTrace();
+            System.out.println(e.getMessage());
         }
         String[] dummyArray = new String[0];
         return dummyArray;
@@ -36,8 +35,6 @@ public class TestCharacterCount {
         int number = 5;
 
         configLocation = args[0];
-
-
 
         Map<String,String> configMap = new HashMap<String,String>();
         configMap.put("configLocation", configLocation);
@@ -57,7 +54,7 @@ public class TestCharacterCount {
         System.out.println("You entered: " + Arrays.toString(input_files));
         CharacterCountMapFunction o = new CharacterCountMapFunction();
 
-        int res = MapReduce.initialize(input_files, MapReduceFunction.makeSerializable(o), null, configMap);
+        int res = MapReduce.initialize(input_files, MapReduceFunction.makeSerializable(o), MapReduceFunction.makeSerializable(o), configMap);
         if (res == 0) {
             verifyCharacterCount();
         } else {
@@ -91,7 +88,6 @@ public class TestCharacterCount {
                 String line = sc.nextLine();
                 if(line!=null && !line.isEmpty()) {
                     String[] counts = line.split("=");
-                    System.out.println("Count " + counts[0] + " " + counts[1]);
                     if (actualCounts.containsKey(counts[0].trim())) {
                         //ignore.
                     } else {

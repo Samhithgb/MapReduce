@@ -13,19 +13,18 @@ import java.util.concurrent.TimeUnit;
 // Server class
 class Master {
 
-    private static List<WorkerInfo> sWorkers = Collections.synchronizedList(new ArrayList<>());
+    private static final List<WorkerInfo> sWorkers = Collections.synchronizedList(new ArrayList<>());
+    private static final List<String> intermediateFiles = Collections.synchronizedList(new ArrayList<>());
 
     private static boolean isError = false;
 
     public static void main(String[] args) throws IOException, ClassNotFoundException {
         ServerSocket server = null;
         String[] inputs = args[0].split(",");
-        String func = args[1];
-        System.out.println("Master running");
-
+        String mapfunc = args[1];
         @SuppressWarnings("unchecked")
         HashMap<String, String> configMap = (HashMap<String, String>) deserialize(args[2]);
-
+        String reduceFunction = args[3];
 
         try {
 
@@ -35,11 +34,11 @@ class Master {
 
             // client request
             int counter = 1;
-            int num_of_workers = Integer.parseInt(configMap.get("num_of_workers"));
-            System.out.println("num of workers acc to config file = "+num_of_workers);
+            int num_of_workers = Integer.parseInt(configMap.get("num_of_workers").trim());
+            System.out.println("Number of workers according to config file = "+num_of_workers);
 
             for (String inp : inputs) {
-                String[] startOptions = new String[]{"java", "-cp", configMap.get("worker_class_directory"), "Worker", String.valueOf(counter++), inp, func, toString((Serializable) configMap)};
+                String[] startOptions = new String[]{"java", "-cp", System.getProperty("user.dir") + File.separator + "out" + File.separator + "production" + File.separator+ "project_folder", "Worker", String.valueOf(counter++), inp, mapfunc, toString((Serializable) configMap), "M"};
                 // inheritIO redirects all child process streams to this process
                 ProcessBuilder pb = new ProcessBuilder(startOptions).inheritIO();
                 Process p = pb.start();
@@ -73,12 +72,13 @@ class Master {
                 // separately
                 new Thread(clientSock).start();
             }
-
             //Implement periodic checks for worker states.
             ScheduledExecutorService scheduler
                     = Executors.newScheduledThreadPool(1);
-            scheduler.scheduleAtFixedRate(new PeriodicTask(),10, 1000, TimeUnit.MILLISECONDS);
-
+            scheduler.scheduleAtFixedRate(new PeriodicTask(() -> {
+                scheduler.shutdown();
+                launchReducers(configMap, reduceFunction);
+            }),10, 1000, TimeUnit.MILLISECONDS);
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -90,6 +90,80 @@ class Master {
                     e.printStackTrace();
                 }
             }
+        }
+    }
+
+    private static void launchReducers(HashMap<String, String> configMap, String reduceFunction){
+        System.out.println("Launcing recuders now");
+        sWorkers.clear();
+        int counter2 = 1;
+        ServerSocket server2 = null;
+
+        //Get all intermediate files
+        File dir = new File("./");
+        File[] foundFiles = dir.listFiles((dir1, name) -> name.contains("worker_id"));
+
+        int number_of_reducers = Integer.parseInt(configMap.get("num_of_reducers").trim());
+        System.out.println("Number of reducers : " + number_of_reducers);
+        try {
+            server2 = new ServerSocket(1235);
+            server2.setReuseAddress(true);
+
+            for (int i = 1; i < number_of_reducers + 1; i++) {
+                String[] startOptions = new String[0];
+                StringBuilder input_file_pattern = new StringBuilder();
+
+
+                for (File file : foundFiles) {
+                    String filename = "_filename_%d";
+                    if (file.getName().contains(String.format(filename, i))) {
+                        input_file_pattern.append("./").append(file.getName()).append(",");
+                    }
+                }
+                try {
+                    startOptions = new String[]{"java", "-cp", System.getProperty("user.dir") + File.separator + "out" + File.separator + "production" + File.separator + "project_folder", "Worker", String.valueOf(counter2++), input_file_pattern.toString(), reduceFunction, toString((Serializable) configMap), "R"};
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                // inheritIO redirects all child process streams to this process
+                ProcessBuilder pb = new ProcessBuilder(startOptions).inheritIO();
+                Process p;
+                try {
+
+                    p = pb.start();
+                    WorkerInfo info = new WorkerInfoBuilder().setWorkerProcess(p)
+                            .setWorkerState(WorkerState.RUNNING)
+                            .setWorkerType(WorkerType.REDUCER)
+                            .setWorkerId(counter2)
+                            .build();
+
+                    sWorkers.add(info);
+                    System.out.println("Number of reducer processes : " + sWorkers.size());
+                    isError = true;
+
+                    // socket object to receive incoming client
+                    // requests
+                    Socket client = server2.accept();
+
+                    // Displaying that new client is connected
+                    // to server
+                    System.out.println("New client connected "
+                            + client.getInetAddress()
+                            .getHostAddress());
+
+                    // create a new thread object
+                    ClientHandler clientSock
+                            = new ClientHandler(client);
+
+                    // This thread will handle the client
+                    // separately
+                    new Thread(clientSock).start();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -115,7 +189,11 @@ class Master {
     }
 
     private static class PeriodicTask implements Runnable {
-        public PeriodicTask(){}
+        PeriodicClassCallback callback;
+        public PeriodicTask(PeriodicClassCallback callback){
+            this.callback = callback;
+        }
+
         @Override
         public void run() {
             boolean isDone = true;
@@ -131,8 +209,7 @@ class Master {
                 }
             }
             if(isDone){
-                //TODO : Once reducers are implemented, take care of launching them from here
-                System.exit(0);
+                callback.onDone();
             }
             else if(isError){
                 // exit status 1 if error occurs in worker
@@ -179,6 +256,11 @@ class Master {
                             System.out.println("Status update received for Worker : " + id + " " + status.toString());
 
                         }
+                        if(line.contains("filename")) {
+                            intermediateFiles.add(line);
+                        }
+                        System.out.println("Intermediate files : " + intermediateFiles.size());
+                        isError = true;
                 }
             } catch (IOException e) {
                 e.printStackTrace();
