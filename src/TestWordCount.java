@@ -45,7 +45,6 @@ public class TestWordCount {
             String temp[] = aa.split("=");
             configMap.put(temp[0], temp[1]);
         }
-        System.out.println(configMap);
 
 
         System.out.println("RUNNING WORD COUNT VERIFICATION");
@@ -94,7 +93,6 @@ public class TestWordCount {
                 String line = sc.nextLine();
                 if(line!=null && !line.isEmpty()) {
                     String[] counts = line.split("=");
-                    System.out.println("Count " + counts[0] + " " + counts[1]);
                     if (actualCounts.containsKey(counts[0].trim())) {
                         actualCounts.put(counts[0].trim(), actualCounts.getOrDefault(counts[0].trim(), 1) + Integer.parseInt(counts[1].trim()));
                     } else {

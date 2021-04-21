@@ -9,7 +9,6 @@ public class TestCharacterCount {
 
     public static String[] getInputDataList(String location) {
         List<String> list=new ArrayList<String>();
-        System.out.println(location);
         try
         {
             FileInputStream fis=new FileInputStream(location.trim());
@@ -89,7 +88,6 @@ public class TestCharacterCount {
                 String line = sc.nextLine();
                 if(line!=null && !line.isEmpty()) {
                     String[] counts = line.split("=");
-                    System.out.println("Count " + counts[0] + " " + counts[1]);
                     if (actualCounts.containsKey(counts[0].trim())) {
                         //ignore.
                     } else {

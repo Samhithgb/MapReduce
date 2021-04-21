@@ -6,8 +6,6 @@ import java.util.Scanner;
 public class CharacterCountMapFunction implements MapReduceFunction<String, String> {
     @Override
     public String apply(String s) {
-        System.out.println("/////////////////////////////////////////////////////////// ");
-
         String[] temp =  s.split(",");
 
 
@@ -18,13 +16,10 @@ public class CharacterCountMapFunction implements MapReduceFunction<String, Stri
                     if(filename.length()<3){
                         break;
                     }
-                    System.out.println("File reading started " + filename);
                     File myObj = new File(filename);
                     Scanner myReader = new Scanner(myObj);
-                    System.out.println("File reading end " + filename);
                     while (myReader.hasNextLine()) {
                         String data = myReader.nextLine();
-                        System.out.println(data);
                         String[] array = data.split("=");
                         if(map.containsKey(array[0])){
 
@@ -38,7 +33,6 @@ public class CharacterCountMapFunction implements MapReduceFunction<String, Stri
                 return serialize(map);
             }
             catch (Exception e){
-                System.out.println("catch m " + e);
                 try {
                     return serialize(map);
                 } catch (IOException ioException) {
@@ -49,8 +43,6 @@ public class CharacterCountMapFunction implements MapReduceFunction<String, Stri
 
         HashMap<String, String> map = new HashMap<>();
         try {
-            System.out.println(s);
-            System.out.println(" the above is filename in apply ");
             File myObj = new File(s);
             Scanner myReader = new Scanner(myObj);
             while (myReader.hasNextLine()) {
@@ -72,13 +64,10 @@ public class CharacterCountMapFunction implements MapReduceFunction<String, Stri
             e.printStackTrace();
         }
         try {
-            System.out.println(map);
-            System.out.println(" apply try ");
             return serialize(map);
         } catch (IOException e) {
             e.printStackTrace();
         }
-        System.out.println(" error aagya in apply ");
         return "ERROR";
     }
 
