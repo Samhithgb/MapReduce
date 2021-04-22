@@ -14,6 +14,8 @@ import java.util.concurrent.TimeUnit;
 class Master {
 
     private static final List<WorkerInfo> sWorkers = Collections.synchronizedList(new ArrayList<>());
+    private static ScheduledExecutorService scheduler
+            = Executors.newScheduledThreadPool(1);
 
     private static boolean isError = false;
 
@@ -72,10 +74,8 @@ class Master {
                 new Thread(clientSock).start();
             }
             //Implement periodic checks for worker states.
-            ScheduledExecutorService scheduler
-                    = Executors.newScheduledThreadPool(1);
+
             scheduler.scheduleAtFixedRate(new PeriodicTask(() -> {
-                scheduler.shutdown();
                 launchReducers(configMap, reduceFunction);
             }),10, 1000, TimeUnit.MILLISECONDS);
 
@@ -92,7 +92,20 @@ class Master {
         }
     }
 
+    private static boolean areReducersLaunched(){
+        if(!sWorkers.isEmpty()){
+            WorkerInfo info = sWorkers.get(0);
+            return info.getType() == WorkerType.REDUCER;
+        }
+        return false;
+    }
+
     private static void launchReducers(HashMap<String, String> configMap, String reduceFunction){
+        if(areReducersLaunched()) {
+            System.out.println("Reducers already launched. Skipping step.");
+            return;
+        }
+
         System.out.println("Launcing recuders now");
         sWorkers.clear();
         int counter2 = 1;
@@ -197,6 +210,7 @@ class Master {
         public void run() {
             boolean isDone = true;
             boolean isError = true;
+
             synchronized (sWorkers) {
                 for(WorkerInfo i : sWorkers) {
                     if(i.getState() != WorkerState.DONE){
@@ -207,7 +221,13 @@ class Master {
                     }
                 }
             }
+
             if(isDone){
+                if(areReducersLaunched()){
+                    //We are done.
+                    System.out.println("All done. Shutting down master");
+                    scheduler.shutdown();
+                }
                 callback.onDone();
             }
             else if(isError){
