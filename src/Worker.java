@@ -125,19 +125,13 @@ public class Worker {
         }
 
         for (String i : resultFromMapper.keySet()) {
-            if(i.charAt(0) < 'g') {
-                myWriterArray[0].write(i + "=" +  resultFromMapper.get(i) + '\n');
-            } else if (i.charAt(0) < 'p') {
-                myWriterArray[1].write(i + "=" +  resultFromMapper.get(i) + '\n');
-            } else {
-                myWriterArray[2].write(i + "=" +  resultFromMapper.get(i) + '\n');
-            }
+            int index = i.hashCode() % num_of_reducers;
+            myWriterArray[index].write(i + "=" +  resultFromMapper.get(i) + '\n');
         }
 
         for(int i=0;i<num_of_reducers;i++) {
             myWriterArray[i].close();
         }
-
 
         return fileNames.toString();
     }
