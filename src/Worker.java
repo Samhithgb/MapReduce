@@ -34,6 +34,8 @@ public class Worker {
                 MapReduceFunction<String, String> func;
 
                 func = functionFromString(args[2]);
+
+                // System.out.println(" ss1: worker culprit filepath: " + file_path);
                 String res = func.apply(file_path);
                 // String res = Worker.apply(file_path);
 
@@ -125,7 +127,12 @@ public class Worker {
         }
 
         for (String i : resultFromMapper.keySet()) {
-            int index = i.hashCode() % num_of_reducers;
+//            System.out.println(" ss1: i "+i);
+//            System.out.println("ss1: i.hashcode "+i.hashCode());
+            int index = (i.hashCode() % num_of_reducers);
+            if(index<0){
+                index = index + num_of_reducers;
+            }
             myWriterArray[index].write(i + "=" +  resultFromMapper.get(i) + '\n');
         }
 

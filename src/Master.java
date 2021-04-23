@@ -29,7 +29,7 @@ class Master {
 
         try {
 
-            // server is listening on port 1234
+            // server is listening on port 1235
             server = new ServerSocket(1235);
             server.setReuseAddress(true);
 
@@ -106,7 +106,7 @@ class Master {
             return;
         }
 
-        System.out.println("Launcing recuders now");
+        System.out.println("------------------------------Launcing recuders now -------------------------------");
         sWorkers.clear();
         int counter2 = 1;
         ServerSocket server2 = null;
