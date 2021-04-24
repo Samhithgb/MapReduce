@@ -51,11 +51,12 @@ public class TestWordCount {
         String[] input_files = getInputDataList(configMap.get("input_data_locations"));
         System.out.println("You entered: " + Arrays.toString(input_files));
         WordCountMapFunction o = new WordCountMapFunction();
+        WordCountReduceFunction r = new WordCountReduceFunction();
 
 
 
 
-        int res = MapReduce.initialize(input_files, MapReduceFunction.makeSerializable(o), MapReduceFunction.makeSerializable(o), configMap);
+        int res = MapReduce.initialize(input_files, MapReduceFunction.makeSerializable(o), MapReduceFunction.makeSerializable(r), configMap);
         System.out.println("ss1: res "+res);
 //        int res =0;
         if (res == 0) {
