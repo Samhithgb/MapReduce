@@ -3,4 +3,4 @@ num_of_reducers=3
 num_of_workers=4
 worker_class_directory=C:\Users\gbsam\IdeaProjects\mapreduce\out\production\project_folder
 master_class_directory=C:\Users\gbsam\IdeaProjects\mapreduce\out\production\project_folder
-worker_threshold=0
+worker_threshold=5

@@ -47,6 +47,8 @@ class Master {
             System.out.println("Number of workers according to config file = "+num_of_workers);
 
             if(mapperId != -1){
+                System.out.println("Relaunching mapper : " + mapperId);
+
                 inputs = new String[]{inputs[mapperId-1]};
                 counter = mapperId;
             }
@@ -134,6 +136,7 @@ class Master {
         int startingId = 1;
 
         if(reducerId != -1) {
+          System.out.println("Relaunching reducer : " + reducerId);
           startingId = reducerId;
           number_of_reducers = startingId + 1;
         }
