@@ -103,7 +103,7 @@ public class TestWordCount {
         }
 
         for(String i : expectedCounts.keySet()) {
-            if(!actualCountsWorkers.get(i).equals(expectedCounts.get(i))){
+            if(!actualCountsReducers.get(i).equals(expectedCounts.get(i))){
                 throw new AssertionError("Error in Reducers: Counts don't match for '" + i + "'. Actual :" + actualCountsReducers.get(i) + " Expected :" + expectedCounts.get(i));
             }
         }
