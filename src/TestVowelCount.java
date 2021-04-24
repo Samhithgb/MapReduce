@@ -69,17 +69,16 @@ public class TestVowelCount {
         File dir = new File(".");
         File[] foundFiles = dir.listFiles(new FilenameFilter() {
             public boolean accept(File dir, String name) {
-                return name.contains("filename");
+                return name.contains("output");
             }
         });
 
         //construct expected HashMap with counts from input files.
         HashMap<String,Integer> expectedCounts = new HashMap<>();
-        expectedCounts.put("data",2);
-        expectedCounts.put("for",1);
-        expectedCounts.put("count",2);
-        expectedCounts.put("test",1);
-        expectedCounts.put("word",1);
+        expectedCounts.put("a",9);
+        expectedCounts.put("e",6);
+        expectedCounts.put("o",7);
+        expectedCounts.put("u",2);
 
         for(File i : foundFiles) {
             FileInputStream fis = new FileInputStream(i);

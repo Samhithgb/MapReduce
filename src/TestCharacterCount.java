@@ -71,16 +71,24 @@ public class TestCharacterCount {
         File dir = new File(".");
         File[] foundFiles = dir.listFiles(new FilenameFilter() {
             public boolean accept(File dir, String name) {
-                return name.contains("filename");
+                return name.contains("output");
             }
         });
         //construct expected HashMap with counts from input files.
         HashMap<String,Integer> expectedCounts = new HashMap<>();
-        expectedCounts.put("data",4);
-        expectedCounts.put("for",3);
-        expectedCounts.put("count",5);
-        expectedCounts.put("test",4);
-        expectedCounts.put("word",4);
+        expectedCounts.put("a",9);
+        expectedCounts.put("c",2);
+        expectedCounts.put("d",6);
+        expectedCounts.put("e",6);
+        expectedCounts.put("f",2);
+        expectedCounts.put("h",1);
+        expectedCounts.put("n",3);
+        expectedCounts.put("o",7);
+        expectedCounts.put("r",5);
+        expectedCounts.put("s",5);
+        expectedCounts.put("t",16);
+        expectedCounts.put("u",2);
+        expectedCounts.put("w",2);
 
         for(File i : foundFiles) {
             FileInputStream fis = new FileInputStream(i);
