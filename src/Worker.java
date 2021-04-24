@@ -34,8 +34,6 @@ public class Worker {
                 MapReduceFunction<String, String> func;
 
                 func = functionFromString(args[2]);
-
-                // System.out.println(" ss1: worker culprit filepath: " + file_path);
                 String res = func.apply(file_path);
                 // String res = Worker.apply(file_path);
 

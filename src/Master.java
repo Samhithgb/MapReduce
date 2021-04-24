@@ -29,7 +29,7 @@ class Master {
 
         try {
 
-            // server is listening on port 1235
+            // server is listening on port 1234
             server = new ServerSocket(1235);
             server.setReuseAddress(true);
 
