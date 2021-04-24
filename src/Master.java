@@ -14,7 +14,7 @@ import java.util.concurrent.TimeUnit;
 class Master {
 
     private static final List<WorkerInfo> sWorkers = Collections.synchronizedList(new ArrayList<>());
-    private static ScheduledExecutorService scheduler
+    private static final ScheduledExecutorService scheduler
             = Executors.newScheduledThreadPool(1);
 
     private static boolean isError = false;
@@ -106,10 +106,10 @@ class Master {
             return;
         }
 
-        System.out.println("------------------------------Launcing recuders now -------------------------------");
+        System.out.println("------------------------------Launching reducers now -------------------------------");
         sWorkers.clear();
         int counter2 = 1;
-        ServerSocket server2 = null;
+        ServerSocket server2;
 
         //Get all intermediate files
         File dir = new File("./");

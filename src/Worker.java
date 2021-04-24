@@ -64,7 +64,6 @@ public class Worker {
                 sendState(WorkerState.DONE, out);
             } catch (Exception e) {
                   e.printStackTrace();
-//                sendState(WorkerState.ERROR, e, out);
                 sendState(WorkerState.ERROR, out);
             }
           
@@ -77,21 +76,13 @@ public class Worker {
         static void generateOutPutFile(HashMap<String, String> resultFromReducer) throws IOException {
             String fileName = "reducer_id_"+ workerId + "_output_.txt";
             File outPutFile = new File(fileName);
-            FileWriter writer = null;
-
             if(resultFromReducer.isEmpty()){
                 System.out.println("No output generated. Will result in an empty file");
             }
-
-            try {
-                writer = new FileWriter(outPutFile);
+            try (FileWriter writer = new FileWriter(outPutFile)) {
                 for (String i : resultFromReducer.keySet()) {
                     writer.write(i + "=" + resultFromReducer.get(i) + '\n');
                 }
-            } catch (IOException e) {
-                e.printStackTrace();
-            } finally {
-                if(writer!=null) writer.close();
             }
         }
 
@@ -127,8 +118,6 @@ public class Worker {
         }
 
         for (String i : resultFromMapper.keySet()) {
-//            System.out.println(" ss1: i "+i);
-//            System.out.println("ss1: i.hashcode "+i.hashCode());
             int index = (i.hashCode() % num_of_reducers);
             if(index<0){
                 index = index + num_of_reducers;
@@ -147,41 +136,13 @@ public class Worker {
      * Read the object from Base64 string.
      */
     @SuppressWarnings("unchecked")
-    private static MapReduceFunction<String, String> functionFromString(String s) throws IOException, ClassNotFoundException {
+    private static MapReduceFunction<String, String> functionFromString(String s) throws IOException, ClassNotFoundException, ClassCastException {
         byte[] data = Base64.getDecoder().decode(s);
         ObjectInputStream ois = new ObjectInputStream(
                 new ByteArrayInputStream(data));
         MapReduceFunction<String, String> o;
-        try {
-            o = (MapReduceFunction<String, String>) ois.readObject();
-        } catch (ClassCastException e) {
-            e.printStackTrace();
-            o = null;
-        }
+        o = (MapReduceFunction<String, String>) ois.readObject();
         ois.close();
         return o;
-    }
-
-    public static String apply(String s) { // for testing purposes only
-
-        HashMap<String, String> haspmap = new HashMap<String, String>();
-        haspmap.put("aa", "1");
-        haspmap.put("nn", "2");
-        haspmap.put("yy", "3");
-
-        try {
-            return serialize(haspmap);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return "";
-    }
-
-    private static String serialize(Serializable o) throws IOException { // for testing purposes only
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        ObjectOutputStream oos = new ObjectOutputStream(baos);
-        oos.writeObject(o);
-        oos.close();
-        return Base64.getEncoder().encodeToString(baos.toByteArray());
     }
 }
