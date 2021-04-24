@@ -20,12 +20,8 @@ public class Worker {
 
             PrintWriter out = new PrintWriter(
                     socket.getOutputStream(), true);
-            // reading from server, optional - could be used to receive commands from master
-            BufferedReader in
-                    = new BufferedReader(new InputStreamReader(
-                    socket.getInputStream()));
 
-                        workerId = args[0];
+            workerId = args[0];
             sendState(WorkerState.RUNNING,out);
 
             try {

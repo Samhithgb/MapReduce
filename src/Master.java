@@ -5,6 +5,7 @@ import workerstate.WorkerType;
 import java.io.*;
 import java.net.*;
 import java.sql.Time;
+import java.time.LocalTime;
 import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -14,32 +15,44 @@ import java.util.concurrent.TimeUnit;
 class Master {
 
     private static final List<WorkerInfo> sWorkers = Collections.synchronizedList(new ArrayList<>());
-    private static final ScheduledExecutorService scheduler
-            = Executors.newScheduledThreadPool(1);
+    private static final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
+    private static long sWorkerThreshold = 10;
+    private static String[] argumentsList = null;
+    private static HashMap<String, String> sConfigMap = new HashMap<>();
     private static boolean isError = false;
 
     public static void main(String[] args) throws IOException, ClassNotFoundException {
+        argumentsList = args;
+        launchMappers(-1);
+    }
+
+    private static void launchMappers(int mapperId) throws IOException, ClassNotFoundException {
+        String[] args = argumentsList;
         ServerSocket server = null;
         String[] inputs = args[0].split(",");
         String mapfunc = args[1];
-        @SuppressWarnings("unchecked")
-        HashMap<String, String> configMap = (HashMap<String, String>) deserialize(args[2]);
+        sConfigMap = (HashMap<String, String>) deserialize(args[2]);
         String reduceFunction = args[3];
 
         try {
-
             // server is listening on port 1234
-            server = new ServerSocket(1235);
+            server = new ServerSocket(0);
             server.setReuseAddress(true);
 
             // client request
             int counter = 1;
-            int num_of_workers = Integer.parseInt(configMap.get("num_of_workers").trim());
+            int num_of_workers = Integer.parseInt(sConfigMap.get("num_of_workers").trim());
+            sWorkerThreshold = Integer.parseInt(sConfigMap.get("worker_threshold").trim());
             System.out.println("Number of workers according to config file = "+num_of_workers);
 
+            if(mapperId != -1){
+                inputs = new String[]{inputs[mapperId-1]};
+                counter = mapperId;
+            }
+
             for (String inp : inputs) {
-                String[] startOptions = new String[]{"java", "-cp", System.getProperty("user.dir") + File.separator + "out" + File.separator + "production" + File.separator+ "project_folder", "Worker", String.valueOf(counter++), inp, mapfunc, toString((Serializable) configMap), "M", String.valueOf(server.getLocalPort())};
+                String[] startOptions = new String[]{"java", "-cp", System.getProperty("user.dir") + File.separator + "out" + File.separator + "production" + File.separator+ "project_folder", "Worker", String.valueOf(counter++), inp, mapfunc, toString((Serializable) sConfigMap), "M", String.valueOf(server.getLocalPort())};
                 // inheritIO redirects all child process streams to this process
                 ProcessBuilder pb = new ProcessBuilder(startOptions).inheritIO();
                 Process p = pb.start();
@@ -48,6 +61,7 @@ class Master {
                         .setWorkerState(WorkerState.RUNNING)
                         .setWorkerType(WorkerType.MAPPER)
                         .setWorkerId(counter)
+                        .setWorkerStartTime(LocalTime.now())
                         .build();
 
                 sWorkers.add(info);
@@ -76,7 +90,7 @@ class Master {
             //Implement periodic checks for worker states.
 
             scheduler.scheduleAtFixedRate(new PeriodicTask(() -> {
-                launchReducers(configMap, reduceFunction);
+                launchReducers(sConfigMap, reduceFunction, -1);
             }),10, 1000, TimeUnit.MILLISECONDS);
 
         } catch (IOException e) {
@@ -100,7 +114,7 @@ class Master {
         return false;
     }
 
-    private static void launchReducers(HashMap<String, String> configMap, String reduceFunction){
+    private static void launchReducers(HashMap<String, String> configMap, String reduceFunction, int reducerId){
         if(areReducersLaunched()) {
             System.out.println("Reducers already launched. Skipping step.");
             return;
@@ -108,7 +122,6 @@ class Master {
 
         System.out.println("------------------------------Launching reducers now -------------------------------");
         sWorkers.clear();
-        int counter2 = 1;
         ServerSocket server2;
 
         //Get all intermediate files
@@ -117,14 +130,21 @@ class Master {
 
         int number_of_reducers = Integer.parseInt(configMap.get("num_of_reducers").trim());
         System.out.println("Number of reducers : " + number_of_reducers);
+
+        int startingId = 1;
+
+        if(reducerId != -1) {
+          startingId = reducerId;
+          number_of_reducers = startingId + 1;
+        }
+
         try {
             server2 = new ServerSocket(0);
             server2.setReuseAddress(true);
 
-            for (int i = 1; i < number_of_reducers + 1; i++) {
+            for (int i = startingId; i < number_of_reducers + 1; i++) {
                 String[] startOptions = new String[0];
                 StringBuilder input_file_pattern = new StringBuilder();
-
 
                 for (File file : foundFiles) {
                     String filename = "_filename_%d";
@@ -133,7 +153,7 @@ class Master {
                     }
                 }
                 try {
-                    startOptions = new String[]{"java", "-cp", System.getProperty("user.dir") + File.separator + "out" + File.separator + "production" + File.separator + "project_folder", "Worker", String.valueOf(counter2++), input_file_pattern.toString(), reduceFunction, toString((Serializable) configMap), "R", String.valueOf(server2.getLocalPort())};
+                    startOptions = new String[]{"java", "-cp", System.getProperty("user.dir") + File.separator + "out" + File.separator + "production" + File.separator + "project_folder", "Worker", String.valueOf(i), input_file_pattern.toString(), reduceFunction, toString((Serializable) configMap), "R", String.valueOf(server2.getLocalPort())};
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -146,7 +166,8 @@ class Master {
                     WorkerInfo info = new WorkerInfoBuilder().setWorkerProcess(p)
                             .setWorkerState(WorkerState.RUNNING)
                             .setWorkerType(WorkerType.REDUCER)
-                            .setWorkerId(counter2)
+                            .setWorkerId(i)
+                            .setWorkerStartTime(LocalTime.now())
                             .build();
 
                     sWorkers.add(info);
@@ -215,6 +236,12 @@ class Master {
                 for(WorkerInfo i : sWorkers) {
                     if(i.getState() != WorkerState.DONE){
                         isDone = false;
+                        System.out.println("Number of workers " + sWorkers.size());
+                        long secondsRunning = ((LocalTime.now().toNanoOfDay() - i.getStartTime().toNanoOfDay())/1000000000);
+                        System.out.println("HEARTBEAT : " +i.getType().toString() + " " + i.getWorkerId() +  " has been running for " + secondsRunning+ " seconds");
+                        if(secondsRunning > sWorkerThreshold) {
+                            relaunchWorker(i);
+                        }
                     }
                     if(i.getState() != WorkerState.ERROR){
                         isError = false;
@@ -239,6 +266,25 @@ class Master {
         }
     }
 
+    private static void relaunchWorker(WorkerInfo i) {
+        Process p = i.getWorkerProcess();
+        p.destroyForcibly();
+        try {
+            p.waitFor();
+            if(i.getType() == WorkerType.MAPPER){
+                try {
+                    launchMappers(i.getWorkerId());
+                } catch (IOException | ClassNotFoundException e) {
+                    e.printStackTrace();
+                }
+            } else {
+                launchReducers(sConfigMap,argumentsList[3],i.getWorkerId());
+            }
+
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
 
     // ClientHandler class
     private static class ClientHandler implements Runnable {
@@ -275,9 +321,8 @@ class Master {
                             System.out.println("Status update received for Worker : " + id + " " + status.toString());
 
                         }
-                        isError = true;
                 }
-            } catch (IOException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             } finally {
                 try {
