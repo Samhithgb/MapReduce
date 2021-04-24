@@ -52,8 +52,9 @@ public class TestVowelCount {
         String[] input_files = getInputDataList(configMap.get("input_data_locations"));
         System.out.println("You entered: " + Arrays.toString(input_files));
         VowelCountMapFunction o = new VowelCountMapFunction();
+        VowelCountReduceFunction r = new VowelCountReduceFunction();
 
-        int res = MapReduce.initialize(input_files, MapReduceFunction.makeSerializable(o), MapReduceFunction.makeSerializable(o), configMap);
+        int res = MapReduce.initialize(input_files, MapReduceFunction.makeSerializable(o), MapReduceFunction.makeSerializable(r), configMap);
         if (res == 0) {
             verifyVowelCount();
         } else {
