@@ -39,7 +39,7 @@ class Master {
             System.out.println("Number of workers according to config file = "+num_of_workers);
 
             for (String inp : inputs) {
-                String[] startOptions = new String[]{"java", "-cp", System.getProperty("user.dir") + File.separator + "out" + File.separator + "production" + File.separator+ "project_folder", "Worker", String.valueOf(counter++), inp, mapfunc, toString((Serializable) configMap), "M"};
+                String[] startOptions = new String[]{"java", "-cp", System.getProperty("user.dir") + File.separator + "out" + File.separator + "production" + File.separator+ "project_folder", "Worker", String.valueOf(counter++), inp, mapfunc, toString((Serializable) configMap), "M", String.valueOf(server.getLocalPort())};
                 // inheritIO redirects all child process streams to this process
                 ProcessBuilder pb = new ProcessBuilder(startOptions).inheritIO();
                 Process p = pb.start();
@@ -118,7 +118,7 @@ class Master {
         int number_of_reducers = Integer.parseInt(configMap.get("num_of_reducers").trim());
         System.out.println("Number of reducers : " + number_of_reducers);
         try {
-            server2 = new ServerSocket(1235);
+            server2 = new ServerSocket(0);
             server2.setReuseAddress(true);
 
             for (int i = 1; i < number_of_reducers + 1; i++) {
@@ -133,7 +133,7 @@ class Master {
                     }
                 }
                 try {
-                    startOptions = new String[]{"java", "-cp", System.getProperty("user.dir") + File.separator + "out" + File.separator + "production" + File.separator + "project_folder", "Worker", String.valueOf(counter2++), input_file_pattern.toString(), reduceFunction, toString((Serializable) configMap), "R"};
+                    startOptions = new String[]{"java", "-cp", System.getProperty("user.dir") + File.separator + "out" + File.separator + "production" + File.separator + "project_folder", "Worker", String.valueOf(counter2++), input_file_pattern.toString(), reduceFunction, toString((Serializable) configMap), "R", String.valueOf(server2.getLocalPort())};
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

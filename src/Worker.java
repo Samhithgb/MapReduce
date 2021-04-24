@@ -15,7 +15,7 @@ public class Worker {
         // establish a connection by providing host and port
         // number
         Thread.sleep(1000);  // removing this might break things
-        try (Socket socket = new Socket("localhost", 1235)) {
+        try (Socket socket = new Socket("localhost", Integer.parseInt(args[5]))) {
             // writing to server
 
             PrintWriter out = new PrintWriter(

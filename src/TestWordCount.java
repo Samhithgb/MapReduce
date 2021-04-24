@@ -51,11 +51,14 @@ public class TestWordCount {
         String[] input_files = getInputDataList(configMap.get("input_data_locations"));
         System.out.println("You entered: " + Arrays.toString(input_files));
         WordCountMapFunction o = new WordCountMapFunction();
+        WordCountReduceFunction r = new WordCountReduceFunction();
 
 
 
 
-        int res = MapReduce.initialize(input_files, MapReduceFunction.makeSerializable(o), MapReduceFunction.makeSerializable(o), configMap);
+        int res = MapReduce.initialize(input_files, MapReduceFunction.makeSerializable(o), MapReduceFunction.makeSerializable(r), configMap);
+        System.out.println("ss1: res "+res);
+//        int res =0;
         if (res == 0) {
 
             verifyWordCount();
@@ -66,25 +69,51 @@ public class TestWordCount {
     }
 
     private static void verifyWordCount() throws FileNotFoundException {
-        //Based on the input, the word counts outputted from the workers have to be as follows.
-        HashMap<String, Integer> actualCounts = new HashMap<>();
 
         File dir = new File(".");
-        File[] foundFiles = dir.listFiles(new FilenameFilter() {
+        File[] foundFilesWorker = dir.listFiles(new FilenameFilter() {
             public boolean accept(File dir, String name) {
                 return name.contains("filename");
             }
         });
 
+        File[] foundFilesReducer = dir.listFiles(new FilenameFilter() {
+            public boolean accept(File dir, String name) {
+                return name.contains("output");
+            }
+        });
+
         //construct expected HashMap with counts from input files.
         HashMap<String,Integer> expectedCounts = new HashMap<>();
-        expectedCounts.put("data",2);
+        expectedCounts.put("data",4);
         expectedCounts.put("for",2);
         expectedCounts.put("count",2);
         expectedCounts.put("test",4);
         expectedCounts.put("word",2);
         expectedCounts.put("set",1);
         expectedCounts.put("another",1);
+
+        //Based on the input, the word counts outputted from the workers have to be as follows.
+        HashMap<String, Integer> actualCountsWorkers = returnActualCounts(foundFilesWorker);
+        HashMap<String, Integer> actualCountsReducers = returnActualCounts(foundFilesReducer);
+
+        for(String i : expectedCounts.keySet()) {
+            if(!actualCountsWorkers.get(i).equals(expectedCounts.get(i))){
+                throw new AssertionError("Error in Worker: Counts don't match for '" + i + "'. Actual :" + actualCountsWorkers.get(i) + " Expected :" + expectedCounts.get(i));
+            }
+        }
+
+        for(String i : expectedCounts.keySet()) {
+            if(!actualCountsReducers.get(i).equals(expectedCounts.get(i))){
+                throw new AssertionError("Error in Reducers: Counts don't match for '" + i + "'. Actual :" + actualCountsReducers.get(i) + " Expected :" + expectedCounts.get(i));
+            }
+        }
+        //no AssertionError thrown. Verification success.
+        System.out.println("VERIFICATION SUCCESS");
+    }
+
+    private static HashMap<String ,Integer> returnActualCounts(File[] foundFiles) throws FileNotFoundException {
+        HashMap<String, Integer> actualCounts = new HashMap<>();
 
         for(File i : foundFiles) {
             FileInputStream fis = new FileInputStream(i);
@@ -102,13 +131,7 @@ public class TestWordCount {
             }
             sc.close();
         }
-
-        for(String i : expectedCounts.keySet()) {
-            if(!actualCounts.get(i).equals(expectedCounts.get(i))){
-                throw new AssertionError("Counts don't match for " + i + ". Actual :" + actualCounts.get(i) + " Expected :" + expectedCounts.get(i));
-            }
-        }
-        //no AssertionError thrown. Verification success.
-        System.out.println("VERIFICATION SUCCESS");
+        return actualCounts;
     }
+
 }
