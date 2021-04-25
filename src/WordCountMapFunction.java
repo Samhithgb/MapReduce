@@ -12,16 +12,13 @@ public class WordCountMapFunction implements MapReduceFunction<String, String> {
 
             String[] temp =  s.split(",");
 
-            // for(String x: temp){
-            //     System.out.println(" ss1: X " + x);
-            // }
             if(temp.length>1){
                 try{
                     for(String filename: temp){
                         if(filename.length()<3){
                             break;
                         }
-                        System.out.println("***************** SS1: File reading started:: " + filename + "  ****************");
+                        System.out.println("***************** File reading started:: " + filename + "  ****************");
 
                         // System.out.println("26");
                         File myObj = new File(filename);
@@ -30,19 +27,15 @@ public class WordCountMapFunction implements MapReduceFunction<String, String> {
                         while (myReader.hasNextLine()) {
                             String data = myReader.nextLine();
                             String[] array = data.split("=");
-                            // System.out.println(" ss1 array[0] " + array[0]);
-//                            System.out.println("33");
 
                             int defVal = Integer.parseInt(map.getOrDefault(array[0], "0"));
                             map.put(array[0], String.valueOf(defVal+Integer.parseInt(array[1])));
 
-//                            System.out.println("41");
                         }
                         myReader.close();
 
 
                     }
-                    System.out.println(" ss1: map "+ map);
                     return serialize(map);
                 }
                 catch (Exception e){

@@ -35,7 +35,6 @@ public class Worker {
 
                 func = functionFromString(args[2]);
 
-                // System.out.println(" ss1: worker culprit filepath: " + file_path);
                 String res = func.apply(file_path);
                 // String res = Worker.apply(file_path);
 
@@ -47,16 +46,16 @@ public class Worker {
                 HashMap<String, String> resultFromMapper = (HashMap<String, String>) deserialize(res);
 
                 if(resultFromMapper!=null || resultFromMapper.isEmpty()){
-                    System.out.println("Empty result received");
+//                    System.out.println("[WORKER]: Empty result received");
                 }
 
                 boolean isMapper = args[4].equalsIgnoreCase("M");
 
                 if(isMapper) {
-                    System.out.println("Mapper. Generating intermediate files");
+                    System.out.println("[WORKER]: Mapper. Generating intermediate files");
                     String filePaths = AssignIntermediateFilesAndReturnFileLocations(resultFromMapper, configMap);
                 } else {
-                    System.out.println("Reducer. Outputting");
+                    System.out.println("[WORKER]: Reducer. Outputting");
                     generateOutPutFile(resultFromMapper);
                 }
                 // out.println("filePaths returned from worker: "+ filePaths);
@@ -80,7 +79,7 @@ public class Worker {
             FileWriter writer = null;
 
             if(resultFromReducer.isEmpty()){
-                System.out.println("No output generated. Will result in an empty file");
+                System.out.println("[WORKER]: No output generated. Will result in an empty file");
             }
 
             try {
@@ -127,8 +126,6 @@ public class Worker {
         }
 
         for (String i : resultFromMapper.keySet()) {
-//            System.out.println(" ss1: i "+i);
-//            System.out.println("ss1: i.hashcode "+i.hashCode());
             int index = (i.hashCode() % num_of_reducers);
             if(index<0){
                 index = index + num_of_reducers;

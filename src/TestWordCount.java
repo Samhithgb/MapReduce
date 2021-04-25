@@ -57,7 +57,6 @@ public class TestWordCount {
 
 
         int res = MapReduce.initialize(input_files, MapReduceFunction.makeSerializable(o), MapReduceFunction.makeSerializable(r), configMap);
-        System.out.println("ss1: res "+res);
 //        int res =0;
         if (res == 0) {
 

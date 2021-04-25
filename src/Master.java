@@ -36,14 +36,14 @@ class Master {
             // client request
             int counter = 1;
             int num_of_workers = Integer.parseInt(configMap.get("num_of_workers").trim());
-            System.out.println("Number of workers according to config file = "+num_of_workers);
+            System.out.println("[MASTER]: Number of workers according to config file = "+num_of_workers);
 
             for (String inp : inputs) {
-                String[] startOptions = new String[]{"java", "-cp", System.getProperty("user.dir") + File.separator + "out" + File.separator + "production" + File.separator+ "project_folder", "Worker", String.valueOf(counter++), inp, mapfunc, toString((Serializable) configMap), "M", String.valueOf(server.getLocalPort())};
+                String[] startOptions = new String[]{"java", "-cp", System.getProperty("user.dir"), "Worker", String.valueOf(counter++), inp, mapfunc, toString((Serializable) configMap), "M", String.valueOf(server.getLocalPort())};
                 // inheritIO redirects all child process streams to this process
                 ProcessBuilder pb = new ProcessBuilder(startOptions).inheritIO();
                 Process p = pb.start();
-                System.out.println("This is a multi-process env and process info is "+ p);
+                System.out.println("[MASTER]: This is a multi-process env and process info is "+ p);
                 WorkerInfo info = new WorkerInfoBuilder().setWorkerProcess(p)
                         .setWorkerState(WorkerState.RUNNING)
                         .setWorkerType(WorkerType.MAPPER)
@@ -51,7 +51,7 @@ class Master {
                         .build();
 
                 sWorkers.add(info);
-                System.out.println("Number of processes : " + sWorkers.size());
+                System.out.println("[MASTER]: Number of processes : " + sWorkers.size());
 
                 isError = true;
 
@@ -61,7 +61,7 @@ class Master {
 
                 // Displaying that new client is connected
                 // to server
-                System.out.println("New client connected "
+                System.out.println("[MASTER]: New client connected "
                         + client.getInetAddress()
                         .getHostAddress());
 
@@ -102,11 +102,11 @@ class Master {
 
     private static void launchReducers(HashMap<String, String> configMap, String reduceFunction){
         if(areReducersLaunched()) {
-            System.out.println("Reducers already launched. Skipping step.");
+            System.out.println("[MASTER]: Reducers already launched. Thank you! ");
             return;
         }
 
-        System.out.println("------------------------------Launcing recuders now -------------------------------");
+        System.out.println("[MASTER]:------------------------------Launcing recuders now -------------------------------");
         sWorkers.clear();
         int counter2 = 1;
         ServerSocket server2 = null;
@@ -116,7 +116,7 @@ class Master {
         File[] foundFiles = dir.listFiles((dir1, name) -> name.contains("worker_id"));
 
         int number_of_reducers = Integer.parseInt(configMap.get("num_of_reducers").trim());
-        System.out.println("Number of reducers : " + number_of_reducers);
+        System.out.println("[MASTER]: Number of reducers : " + number_of_reducers);
         try {
             server2 = new ServerSocket(0);
             server2.setReuseAddress(true);
@@ -133,7 +133,7 @@ class Master {
                     }
                 }
                 try {
-                    startOptions = new String[]{"java", "-cp", System.getProperty("user.dir") + File.separator + "out" + File.separator + "production" + File.separator + "project_folder", "Worker", String.valueOf(counter2++), input_file_pattern.toString(), reduceFunction, toString((Serializable) configMap), "R", String.valueOf(server2.getLocalPort())};
+                    startOptions = new String[]{"java", "-cp", System.getProperty("user.dir"), "Worker", String.valueOf(counter2++), input_file_pattern.toString(), reduceFunction, toString((Serializable) configMap), "R", String.valueOf(server2.getLocalPort())};
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -150,7 +150,7 @@ class Master {
                             .build();
 
                     sWorkers.add(info);
-                    System.out.println("Number of reducer processes : " + sWorkers.size());
+                    System.out.println("[MASTER]: Number of reducer processes : " + sWorkers.size());
                     isError = true;
 
                     // socket object to receive incoming client
@@ -159,7 +159,7 @@ class Master {
 
                     // Displaying that new client is connected
                     // to server
-                    System.out.println("New client connected "
+                    System.out.println("[MASTER]: New client connected "
                             + client.getInetAddress()
                             .getHostAddress());
 
@@ -225,14 +225,14 @@ class Master {
             if(isDone){
                 if(areReducersLaunched()){
                     //We are done.
-                    System.out.println("All done. Shutting down master");
+                    System.out.println("[MASTER]: All done. Shutting down master");
                     scheduler.shutdown();
                 }
                 callback.onDone();
             }
             else if(isError){
                 // exit status 1 if error occurs in worker
-                System.out.println("Error while running UDF");
+                System.out.println("[MASTER]: Error while running UDF");
                 System.exit(1);
             }
 
@@ -272,7 +272,7 @@ class Master {
                             int id = Integer.parseInt(two[0].split(" ")[1]);
                             WorkerInfo info = sWorkers.get(id - 1);
                             info.setState(status);
-                            System.out.println("Status update received for Worker : " + id + " " + status.toString());
+                            System.out.println("[MASTER]: Status update received for Worker : " + id + " " + status.toString());
 
                         }
                         isError = true;
