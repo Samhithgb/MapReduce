@@ -1,5 +1,5 @@
 input_data_locations=/Users/ssrigiri/umass/532/Homeworks/project-1/p1_mapreduce-team-88/src/input_data_paths.txt
 num_of_reducers=4
 num_of_workers=2
-worker_class_directory=/Users/ssrigiri/umass/532/Homeworks/project-1/p1_mapreduce-team-88/out/production/project_folder/ss
-master_class_directory=/Users/ssrigiri/umass/532/Homeworks/project-1/p1_mapreduce-team-88/out/production/project_folder/ss
+worker_class_directory=/Users/ssrigiri/umass/532/Homeworks/project-1/p1_mapreduce-team-88/out/production/project_folder/
+master_class_directory=/Users/ssrigiri/umass/532/Homeworks/project-1/p1_mapreduce-team-88/out/production/project_folder/
