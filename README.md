@@ -7,10 +7,8 @@ Design Document : https://docs.google.com/document/d/1hNqLwp2Pkl96p7PXzyFD9lZ7Ty
 
 # Milestone 1: 
 
-Initial Step : Please update input_data_paths.txt with the paths to the input files with each path being in a new line
+Initial Step : Please update input_data_paths.txt with the paths to the input files with each path being in a new line. 
 Also update the paths and variables accordingly in the Config.txt.
-
-
 
 
 For running all tests, please checkout the project, and run the following commands in the command line:  \
@@ -37,10 +35,10 @@ Firstly, go to the following corresponding location in your system.
 
 Notes : 
 
-The implementation currently arleady takes care of multiple worker processes and their communication of the states to master. The master periodically checks for the status of the workers
+The implementation currently already takes care of multiple worker processes and their communication of the states to master. The master periodically checks for the status of the workers.
 
 
 Verification :  The test cases that are run include : 
 1. Word Count : Count the number of occurences of a word accross multiple files. 
 2. Character Count : Compute the character count of all the words occuring across all the input files. 
-3. Vowel Count : Compute the number of vowels occuring in all the words appeading across the input files.
+3. Vowel Count : Compute the number of vowels occuring in all the words appending across the input files.
