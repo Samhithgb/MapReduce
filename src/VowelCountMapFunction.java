@@ -27,7 +27,7 @@ public class VowelCountMapFunction implements MapReduceFunction<String, String> 
                     } else {
                         for(char j : i.toCharArray()) {
                             if(vowels.contains(j)) {
-                                map.put(i, String.valueOf(Integer.parseInt(map.getOrDefault(i,String.valueOf(0)))+1));
+                                map.put(Character.toString(j), String.valueOf(Integer.parseInt(map.getOrDefault(Character.toString(j),String.valueOf(0)))+1));
                             }
                         }
                     }

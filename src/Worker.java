@@ -14,7 +14,7 @@ public class Worker {
    public static void main(String[] args) throws InterruptedException {
         // establish a connection by providing host and port
         // number
-        Thread.sleep(1000);  // removing this might break things
+        Thread.sleep(10);  // removing this might break things
         try (Socket socket = new Socket("localhost", Integer.parseInt(args[5]))) {
             // writing to server
 

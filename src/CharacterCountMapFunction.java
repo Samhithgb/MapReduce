@@ -53,7 +53,10 @@ public class CharacterCountMapFunction implements MapReduceFunction<String, Stri
                     if (map.containsKey(i)) {
                         //done. ignore.
                     } else {
-                        map.put(i, String.valueOf(i.toCharArray().length));
+                        for(char j : i.toCharArray()) {
+                            map.put(Character.toString(j), String.valueOf(Integer.parseInt(map.getOrDefault(Character.toString(j),String.valueOf(0)))+1));
+
+                        }
                     }
                 }
             }
