@@ -298,7 +298,7 @@ class Master {
 
         if(sRelaunchTimes == 0){
             System.out.println("Reached limit for number of re-launches. Moving on after the kill");
-            return;
+            System.exit(1);
         }
         sRelaunchTimes--;
 
@@ -367,9 +367,9 @@ class Master {
                 }
             } catch (IOException e) {
                 System.out.println("Exception");
-                ClientHandler clientSock
+  /*              ClientHandler clientSock
                         = new ClientHandler(clientSocket, workerId);
-                new Thread(clientSock).start();
+                new Thread(clientSock).start();*/
                 e.printStackTrace();
             } finally {
                 try {
