@@ -292,7 +292,6 @@ class Master {
     }
 
     private static void relaunchWorker(WorkerInfo i) {
-        sRelaunchTimes--;
         System.out.println("Relaunching : " + i.getType() + " with id " + i.getWorkerId());
         Process p = i.getWorkerProcess();
         p.destroyForcibly();
@@ -301,6 +300,7 @@ class Master {
             System.out.println("Reached limit for number of re-launches. Moving on after the kill");
             return;
         }
+        sRelaunchTimes--;
 
         try {
             p.waitFor();
