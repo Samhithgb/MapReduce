@@ -4,7 +4,6 @@ import workerstate.WorkerType;
 
 import java.io.*;
 import java.net.*;
-import java.sql.Time;
 import java.time.LocalTime;
 import java.util.*;
 import java.util.concurrent.Executors;
@@ -14,31 +13,40 @@ import java.util.concurrent.TimeUnit;
 // Server class
 class Master {
 
-    private static final List<WorkerInfo> sWorkers = Collections.synchronizedList(new ArrayList<>());
+    private static final Map<Integer,WorkerInfo> sWorkers = Collections.synchronizedMap(new HashMap<Integer, WorkerInfo>());
     private static final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
     private static long sWorkerThreshold = 10;
     private static String[] argumentsList = null;
     private static HashMap<String, String> sConfigMap = new HashMap<>();
-    private static boolean isError = false;
+    private static int sRelaunchTimes = 1;
+    private static ServerSocket mapperSocket = null;
+    private static ServerSocket reducerSocket = null;
 
     public static void main(String[] args) throws IOException, ClassNotFoundException {
         argumentsList = args;
+        sConfigMap = (HashMap<String, String>) deserialize(args[2]);
+        sRelaunchTimes = Integer.parseInt(sConfigMap.get("relaunch_times").trim());
         launchMappers(-1);
     }
 
     private static void launchMappers(int mapperId) throws IOException, ClassNotFoundException {
+
         String[] args = argumentsList;
         ServerSocket server = null;
         String[] inputs = args[0].split(",");
         String mapfunc = args[1];
-        sConfigMap = (HashMap<String, String>) deserialize(args[2]);
         String reduceFunction = args[3];
 
         try {
+            if(mapperSocket!=null){
+                mapperSocket.close();
+            }
+
             // server is listening on port 1234
-            server = new ServerSocket(0);
-            server.setReuseAddress(true);
+            mapperSocket = new ServerSocket(0);
+            mapperSocket.setReuseAddress(true);
+
 
             // client request
             int counter = 1;
@@ -49,12 +57,22 @@ class Master {
             if(mapperId != -1){
                 System.out.println("Relaunching mapper : " + mapperId);
 
-                inputs = new String[]{inputs[mapperId-1]};
-                counter = mapperId;
+                if(mapperId > (inputs.length)){
+                    System.out.println("No work for the mapper. Not relaunching");
+                    return;
+                }
+
+                try {
+                    inputs = new String[]{inputs[mapperId - 1]};
+                    counter = mapperId;
+                } catch (Exception e){
+                    e.printStackTrace();
+                }
             }
 
             for (String inp : inputs) {
-                String[] startOptions = new String[]{"java", "-cp", System.getProperty("user.dir") + File.separator + "out" + File.separator + "production" + File.separator+ "project_folder", "Worker", String.valueOf(counter++), inp, mapfunc, toString((Serializable) sConfigMap), "M", String.valueOf(server.getLocalPort())};
+
+                String[] startOptions = new String[]{"java", "-cp", System.getProperty("user.dir") + File.separator + "out" + File.separator + "production" + File.separator+ "project_folder", "Worker", String.valueOf(counter), inp, mapfunc, toString((Serializable) sConfigMap), "M", String.valueOf(mapperSocket.getLocalPort())};
                 // inheritIO redirects all child process streams to this process
                 ProcessBuilder pb = new ProcessBuilder(startOptions).inheritIO();
                 Process p = pb.start();
@@ -66,15 +84,14 @@ class Master {
                         .setWorkerStartTime(LocalTime.now())
                         .build();
 
-                sWorkers.add(info);
+
+                sWorkers.put(info.getWorkerId(),info);
+
                 System.out.println("Number of processes : " + sWorkers.size());
-
-                isError = true;
-
                 // socket object to receive incoming client
                 // requests
-                Socket client = server.accept();
 
+                Socket client = mapperSocket.accept();
                 // Displaying that new client is connected
                 // to server
                 System.out.println("New client connected "
@@ -88,6 +105,7 @@ class Master {
                 // This thread will handle the client
                 // separately
                 new Thread(clientSock).start();
+                counter++;
             }
             //Implement periodic checks for worker states.
 
@@ -98,9 +116,9 @@ class Master {
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
-            if (server != null) {
+            if (mapperSocket != null) {
                 try {
-                    server.close();
+                    mapperSocket.close();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -110,21 +128,20 @@ class Master {
 
     private static boolean areReducersLaunched(){
         if(!sWorkers.isEmpty()){
-            WorkerInfo info = sWorkers.get(0);
+            WorkerInfo info = sWorkers.get(1);
             return info.getType() == WorkerType.REDUCER;
         }
         return false;
     }
 
     private static void launchReducers(HashMap<String, String> configMap, String reduceFunction, int reducerId){
-        if(areReducersLaunched()) {
+        if(areReducersLaunched() && reducerId == -1) {
             System.out.println("Reducers already launched. Skipping step.");
             return;
         }
 
-        System.out.println("------------------------------Launching reducers now -------------------------------");
+        System.out.println("------------------------------Launching reducer/s now -------------------------------");
         sWorkers.clear();
-        ServerSocket server2;
 
         //Get all intermediate files
         File dir = new File("./");
@@ -142,8 +159,13 @@ class Master {
         }
 
         try {
-            server2 = new ServerSocket(0);
-            server2.setReuseAddress(true);
+
+            if(reducerSocket!=null){
+                reducerSocket.close();
+            }
+
+            reducerSocket = new ServerSocket(0);
+            reducerSocket.setReuseAddress(true);
 
             for (int i = startingId; i < number_of_reducers + 1; i++) {
                 String[] startOptions = new String[0];
@@ -156,7 +178,7 @@ class Master {
                     }
                 }
                 try {
-                    startOptions = new String[]{"java", "-cp", System.getProperty("user.dir") + File.separator + "out" + File.separator + "production" + File.separator + "project_folder", "Worker", String.valueOf(i), input_file_pattern.toString(), reduceFunction, toString((Serializable) configMap), "R", String.valueOf(server2.getLocalPort())};
+                    startOptions = new String[]{"java", "-cp", System.getProperty("user.dir") + File.separator + "out" + File.separator + "production" + File.separator + "project_folder", "Worker", String.valueOf(i), input_file_pattern.toString(), reduceFunction, toString((Serializable) configMap), "R", String.valueOf(reducerSocket.getLocalPort())};
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -173,13 +195,12 @@ class Master {
                             .setWorkerStartTime(LocalTime.now())
                             .build();
 
-                    sWorkers.add(info);
+                    sWorkers.put(info.getWorkerId(),info);
                     System.out.println("Number of reducer processes : " + sWorkers.size());
-                    isError = true;
 
                     // socket object to receive incoming client
                     // requests
-                    Socket client = server2.accept();
+                    Socket client = reducerSocket.accept();
 
                     // Displaying that new client is connected
                     // to server
@@ -236,7 +257,7 @@ class Master {
             boolean isError = true;
 
             synchronized (sWorkers) {
-                for(WorkerInfo i : sWorkers) {
+                for(WorkerInfo i : sWorkers.values()) {
                     if(i.getState() != WorkerState.DONE){
                         isDone = false;
                         System.out.println("Number of workers " + sWorkers.size());
@@ -257,6 +278,7 @@ class Master {
                     //We are done.
                     System.out.println("All done. Shutting down master");
                     scheduler.shutdown();
+                    return;
                 }
                 callback.onDone();
             }
@@ -270,8 +292,16 @@ class Master {
     }
 
     private static void relaunchWorker(WorkerInfo i) {
+        sRelaunchTimes--;
+        System.out.println("Relaunching : " + i.getType() + " with id " + i.getWorkerId());
         Process p = i.getWorkerProcess();
         p.destroyForcibly();
+
+        if(sRelaunchTimes == 0){
+            System.out.println("Reached limit for number of re-launches. Moving on after the kill");
+            return;
+        }
+
         try {
             p.waitFor();
             if(i.getType() == WorkerType.MAPPER){
@@ -283,7 +313,6 @@ class Master {
             } else {
                 launchReducers(sConfigMap,argumentsList[3],i.getWorkerId());
             }
-
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -302,8 +331,12 @@ class Master {
             PrintWriter out = null;
             BufferedReader in = null;
             try {
-
                 // get the outputstream of client
+                if(clientSocket.isClosed()){
+                    System.out.println("Socket closed");
+                    return;
+                }
+
                 out = new PrintWriter(
                         clientSocket.getOutputStream(), true);
 
@@ -311,21 +344,28 @@ class Master {
                 in = new BufferedReader(
                         new InputStreamReader(
                                 clientSocket.getInputStream()));
-
                 String line;
-                while ((line = in.readLine()) != null) {
+
+                if((mapperSocket!=null && mapperSocket.isClosed()) && (reducerSocket!=null &&reducerSocket.isClosed())){
+                    System.out.println("Closing the socket");
+                    clientSocket.close();
+                }
+
+                while (!clientSocket.isClosed() && (line = in.readLine()) != null) {
                         if(line.contains("STATUS")) {
                             //Status update received. Process.
                             String[] two = line.split(":");
                             WorkerState status = WorkerState.valueOf(two[1].trim());
                             int id = Integer.parseInt(two[0].split(" ")[1]);
-                            WorkerInfo info = sWorkers.get(id - 1);
+                            WorkerInfo info = sWorkers.get(id);
                             info.setState(status);
                             System.out.println("Status update received for Worker : " + id + " " + status.toString());
-
                         }
                 }
-            } catch (Exception e) {
+            } catch (IOException e) {
+                ClientHandler clientSock
+                        = new ClientHandler(clientSocket);
+                new Thread(clientSock).start();
                 e.printStackTrace();
             } finally {
                 try {

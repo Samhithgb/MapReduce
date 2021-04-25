@@ -24,6 +24,10 @@ public class Worker {
             workerId = args[0];
             sendState(WorkerState.RUNNING,out);
 
+            if(Integer.parseInt(workerId) == 1){
+                while (true){}
+            }
+
             try {
                 String file_path = args[1];
 //                Thread.sleep(5000); // uncomment to test if processes run in parallel
@@ -43,7 +47,6 @@ public class Worker {
                 if(resultFromMapper!=null || resultFromMapper.isEmpty()){
                     System.out.println("Empty result received");
                 }
-
                 boolean isMapper = args[4].equalsIgnoreCase("M");
 
                 if(isMapper) {

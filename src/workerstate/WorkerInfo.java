@@ -1,6 +1,7 @@
 package workerstate;
 
 import java.time.LocalTime;
+import java.util.Objects;
 
 public class WorkerInfo {
 
@@ -58,5 +59,13 @@ public class WorkerInfo {
 
     public void setStartTime(LocalTime startTime) {
         this.startTime = startTime;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        WorkerInfo that = (WorkerInfo) o;
+        return workerId == that.workerId && type == that.type;
     }
 }

@@ -11,6 +11,7 @@ public class MapReduce implements Serializable {
         String[] startOptions = new String[]{"java", "-cp", System.getProperty("user.dir") + File.separator + "out" + File.separator + "production" + File.separator+ "project_folder", "Master", master_input, toString(mapFunction), toString((Serializable) configMap), toString(reduceFunction)};
         ProcessBuilder pb = new ProcessBuilder(startOptions).inheritIO();
         Process p = pb.start();
+
         // Wait for process to end
         p.waitFor();
         return p.exitValue();
