@@ -37,6 +37,8 @@ Firstly, go to the following corresponding location in your system.
 Notes : 
 
 The implementation currently already takes care of multiple worker processes and their communication of the states to master. The master periodically checks for the status of the workers.
+This is a multi-process environment and each worker is a new process.
+After the Mappers are succesfully launched and completed, we start the reducers.
 
 
 Verification :  The test cases that are run include : 
