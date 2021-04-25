@@ -12,21 +12,28 @@ Initial Step : Please update input_data_paths.txt with the paths to the input fi
 
 
 
-For running all tests in the milestone 1, please checkout the project, and run the following commands in the command line:  \
+For running all tests, please checkout the project, and run the following commands in the command line:  \
+Firstly, go to the following corresponding location in your system.
+
+1. Go to the src folder
+  Ex: /Users/ssrigiri/umass/532/Homeworks/project-1/p1_mapreduce-team-88/src
+2. Run the following command 
+  For mac based systems:
+  ```
+  javac -d /Users/ssrigiri/umass/532/Homeworks/project-1/p1_mapreduce-team-88/out/production/project_folder/ *.java
+  ```
+  [Note]: Change the above path accordingly
+  
+3. Go to the folder where the .class files are stored
+  Ex: /Users/ssrigiri/umass/532/Homeworks/project-1/p1_mapreduce-team-88/out/production/project_folder
+4. Run the following command
+  ```
+  java  RunTests /Users/ssrigiri/umass/532/Homeworks/project-1/p1_mapreduce-team-88/src/Config.txt
+  ```
+  [NOTE]: Give the correct path of the Config.txt
 
 
-For Unix-based systems : 
 
-```
-java *.java 
-java RunTests <path_to>/input_data_paths.txt
-```
-For Windows : 
-```
-java *.java 
-java RunTests <path_to>\input_data_paths.txt
-
-```
 Notes : 
 
 The implementation currently arleady takes care of multiple worker processes and their communication of the states to master. The master periodically checks for the status of the workers
