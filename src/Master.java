@@ -70,6 +70,8 @@ class Master {
                 }
             }
 
+
+
             for (String inp : inputs) {
 
                 String[] startOptions = new String[]{"java", "-cp", System.getProperty("user.dir") + File.separator + "out" + File.separator + "production" + File.separator+ "project_folder", "Worker", String.valueOf(counter), inp, mapfunc, toString((Serializable) sConfigMap), "M", String.valueOf(mapperSocket.getLocalPort())};
@@ -306,11 +308,24 @@ class Master {
             p.waitFor();
             if(i.getType() == WorkerType.MAPPER){
                 try {
+                    String fileName = "run_second.txt";
+                    File outPutFile = new File(fileName);
+                    try (FileWriter writer = new FileWriter(outPutFile)) {
+                        writer.write("1");
+                        System.out.println("NO INFINITE LOOP NOW____________________________________________________________________________");
+
+                    }
+//                    for (String s : argumentsList){
+//                        System.out.println("MAP--->" + s);
+//                    }
                     launchMappers(i.getWorkerId());
                 } catch (IOException | ClassNotFoundException e) {
                     e.printStackTrace();
                 }
             } else {
+                for (String s : argumentsList){
+                    System.out.println("----->" + s);
+                }
                 launchReducers(sConfigMap,argumentsList[3],i.getWorkerId());
             }
         } catch (InterruptedException e) {

@@ -4,6 +4,7 @@ import java.io.*;
 import java.net.Socket;
 import java.util.Base64;
 import java.util.HashMap;
+import java.util.Scanner;
 
 public class Worker {
 
@@ -24,9 +25,9 @@ public class Worker {
             workerId = args[0];
             sendState(WorkerState.RUNNING,out);
 
-            if(Integer.parseInt(workerId) == 1){
-                while (true){}
-            }
+//            if(Integer.parseInt(workerId) == 1){
+//                while (true){}
+//            }
 
             try {
                 String file_path = args[1];
@@ -37,6 +38,31 @@ public class Worker {
                 String res = func.apply(file_path);
                 // String res = Worker.apply(file_path);
 
+                String filename = "run_second.txt";
+                File myObj = new File(filename);
+                Scanner myReader = new Scanner(myObj);
+                String data = "";
+                while (myReader.hasNextLine()) {
+                    data = myReader.nextLine();
+
+                }
+                boolean get_stuck = true;
+                myReader.close();
+                if(data.equals("1")){
+                    get_stuck = false;
+                }
+
+                String t;
+                String t2 = "a";
+                if (get_stuck) {
+                    System.out.println("STUCK FOREVER :(_______________________________________________________________");
+                    while (true) {
+                        t = "" + t2;
+                        if (t.equals(" ")) {
+                            break;
+                        }
+                    }
+                }
                 @SuppressWarnings("unchecked")
                 HashMap<String, String> configMap = (HashMap<String, String>) deserialize(args[3]);
 
