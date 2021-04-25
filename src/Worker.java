@@ -24,10 +24,6 @@ public class Worker {
             workerId = args[0];
             sendState(WorkerState.RUNNING,out);
 
-            if(Integer.parseInt(workerId) == 1){
-                while (true){}
-            }
-
             try {
                 String file_path = args[1];
 //                Thread.sleep(5000); // uncomment to test if processes run in parallel

@@ -100,7 +100,7 @@ class Master {
 
                 // create a new thread object
                 ClientHandler clientSock
-                        = new ClientHandler(client);
+                        = new ClientHandler(client, info.getWorkerId());
 
                 // This thread will handle the client
                 // separately
@@ -210,7 +210,7 @@ class Master {
 
                     // create a new thread object
                     ClientHandler clientSock
-                            = new ClientHandler(client);
+                            = new ClientHandler(client, info.getWorkerId());
 
                     // This thread will handle the client
                     // separately
@@ -321,13 +321,16 @@ class Master {
     // ClientHandler class
     private static class ClientHandler implements Runnable {
         private final Socket clientSocket;
-
+        private int workerId;
         // Constructor
-        public ClientHandler(Socket socket) {
+        public ClientHandler(Socket socket, int workerId) {
             this.clientSocket = socket;
+            this.workerId = workerId;
         }
 
         public void run() {
+            System.out.println(" Starting client handler for worker id : " + workerId);
+
             PrintWriter out = null;
             BufferedReader in = null;
             try {
@@ -363,8 +366,9 @@ class Master {
                         }
                 }
             } catch (IOException e) {
+                System.out.println("Exception");
                 ClientHandler clientSock
-                        = new ClientHandler(clientSocket);
+                        = new ClientHandler(clientSocket, workerId);
                 new Thread(clientSock).start();
                 e.printStackTrace();
             } finally {
