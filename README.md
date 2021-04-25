@@ -25,7 +25,8 @@ Firstly, go to the following corresponding location in your system.
   
 3. Go to the folder where the .class files are stored \
   Ex: /Users/ssrigiri/umass/532/Homeworks/project-1/p1_mapreduce-team-88/out/production/project_folder
-4. Run the following command. \
+4. Run the following command.\
+  For mac based systems:
   ```
   java  RunTests /Users/ssrigiri/umass/532/Homeworks/project-1/p1_mapreduce-team-88/src/Config.txt
   ```
