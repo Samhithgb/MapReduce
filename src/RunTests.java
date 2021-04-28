@@ -5,14 +5,14 @@ public class RunTests {
     public static void main(String[] args) throws IOException, InterruptedException {
         configFile = args[0];
 
-        FileWriter fwOb = new FileWriter("run_second.txt", false);
-        PrintWriter pwOb = new PrintWriter(fwOb, false);
-        pwOb.flush();
-        pwOb.close();
-        fwOb.close();
-
         String [] testFileList = {"TestCharacterCount", "TestWordCount", "TestVowelCount"};
         for(String i : testFileList) {
+            FileWriter fwOb = new FileWriter("run_second.txt", false);
+            PrintWriter pwOb = new PrintWriter(fwOb, false);
+            pwOb.flush();
+            pwOb.close();
+            fwOb.close();
+
             System.out.println("Working Directory = " + System.getProperty("user.dir"));
             String[] command = new String[]{"java" , "-cp", System.getProperty("user.dir") + File.separator + "out" + File.separator + "production" + File.separator+ "project_folder" ,i, configFile};
             System.out.println("-------------------------------STARTED  " + i +"  -----------------------------------");
