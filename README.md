@@ -26,6 +26,7 @@ Notes :
 The implementation currently already takes care of multiple worker processes and their communication of the states to master. The master periodically checks for the status of the workers.
 This is a multi-process environment and each worker is a new process.
 After the Mappers are successfully launched and completed, we start the reducers.
+For each test, we also test fault tolerance by putting 1-2 workers in an infinite loop. Master detects when this happens and restarts the workers
 
 
 Verification:  The test cases that are run include : 
