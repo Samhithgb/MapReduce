@@ -2,6 +2,8 @@ import workerstate.WorkerInfo;
 import workerstate.WorkerState;
 import workerstate.WorkerType;
 
+import java.time.LocalTime;
+
 public class WorkerInfoBuilder {
     WorkerInfo info;
 
@@ -26,6 +28,11 @@ public class WorkerInfoBuilder {
 
     public WorkerInfoBuilder setWorkerId(int id){
         info.setWorkerId(id);
+        return this;
+    }
+
+    public WorkerInfoBuilder setWorkerStartTime(LocalTime time){
+        info.setStartTime(time);
         return this;
     }
 
