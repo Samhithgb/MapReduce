@@ -11,7 +11,7 @@ Initial Step: Please update input_data_paths.txt with the paths to the input fil
 Also, update the paths and variables accordingly in the Config.txt.
 
 
-For running all tests, please check out the project, and perform the following actions in IDEA:  \
+For running all tests, please check out the project, and perform the following actions in IDEA: 
 
 1. IDEA's working directory should be the project folder (where out, src and inputData folders are located)
 2. Compile RunTests and add the following argumet to the configuration `./src/Config.txt`
