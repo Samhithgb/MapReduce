@@ -29,12 +29,13 @@ public class Worker {
                 String file_path = args[1];
                 MapReduceFunction<String, String> func;
 
+                //UDF (either map function or reduce function passed from the master)
                 func = functionFromString(args[2]);
 
                 String res = func.apply(file_path);
                 // String res = Worker.apply(file_path);
 
-                // Below file tells whether fault tolerance is being tested
+                // Below file tells whether fault tolerance is being tested.
                 String filename = "run_second.txt";
                 File myObj = new File(filename);
                 Scanner myReader = new Scanner(myObj);
@@ -50,7 +51,7 @@ public class Worker {
                     get_stuck = false;
                 }
 
-                // Put worker into infinite loop to simulate crash
+                // Put worker into infinite loop to simulate crash : Used for testing fault tolerance.
                 String t;
                 String t2 = "a";
                 if (get_stuck) {
@@ -62,10 +63,13 @@ public class Worker {
                         }
                     }
                 }
+
+                //get the configmap from the arguments.
                 @SuppressWarnings("unchecked")
                 HashMap<String, String> configMap = (HashMap<String, String>) deserialize(args[3]);
 
 
+                //get the deserialized result and store it on HashMap.
                 @SuppressWarnings("unchecked")
                 HashMap<String, String> resultFromMapper = (HashMap<String, String>) deserialize(res);
 
@@ -74,6 +78,7 @@ public class Worker {
                 }
                 boolean isMapper = args[4].equalsIgnoreCase("M");
 
+                //If the worker is a mapper, generate intermediate files using result above. Else, generate output files.
                 if(isMapper) {
                     System.out.println("[WORKER]: Mapper. Generating intermediate files");
                     String filePaths = AssignIntermediateFilesAndReturnFileLocations(resultFromMapper, configMap);
@@ -94,7 +99,7 @@ public class Worker {
         }
     }
 
-
+        //method to generate reducer's output files.
         static void generateOutPutFile(HashMap<String, String> resultFromReducer) throws IOException {
             String fileName = "reducer_id_"+ workerId + "_output_.txt";
             File outPutFile = new File(fileName);
@@ -108,6 +113,7 @@ public class Worker {
             }
         }
 
+        //method to communicate state to the master.
         static void sendState(WorkerState state, PrintWriter out){
             out.println(String.format(STATUS_UPDATE_FORMAT,workerId,state.toString()));
         }
@@ -123,6 +129,7 @@ public class Worker {
         return o;
     }
 
+    //Method to assign intermediate file and use a hash function to generate intermediate files based on number of reducers.
     private static String AssignIntermediateFilesAndReturnFileLocations(HashMap<String, String> resultFromMapper, HashMap<String, String> configMap) throws IOException {
         int num_of_reducers = Integer.parseInt(configMap.get("num_of_reducers").trim());
 
@@ -141,7 +148,7 @@ public class Worker {
 
         for (String i : resultFromMapper.keySet()) {
             int index = (i.hashCode() % num_of_reducers);
-            if(index<0){
+            if(index<0){    //handle negative hash codes.
                 index = index + num_of_reducers;
             }
             myWriterArray[index].write(i + "=" +  resultFromMapper.get(i) + '\n');
