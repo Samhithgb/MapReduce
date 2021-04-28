@@ -82,3 +82,9 @@ Strengths:
 4. Higher Throughput
 5. Availability
 6. Scalability
+
+# Architecture Design
+
+<img width="843" alt="Screenshot 2021-04-28 at 7 39 31 PM" src="https://user-images.githubusercontent.com/29397962/116418319-a8a6ee00-a859-11eb-8163-0dae8da621c7.png">
+
+<img width="785" alt="Screenshot 2021-04-28 at 7 40 10 PM" src="https://user-images.githubusercontent.com/29397962/116418336-ac3a7500-a859-11eb-9afd-bfcffa7cce1c.png">
