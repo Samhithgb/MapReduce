@@ -1,5 +1,5 @@
 # p1_mapreduce-team-88
-
+Please watch the below video and make the corresponding changes in your files (Ex: Config.txt, input_data_paths.txt) and IDEA Configurations.
 Video of the working verification: https://youtu.be/FEQfV0Rkg-8
 
 Design Document: https://docs.google.com/document/d/1hNqLwp2Pkl96p7PXzyFD9lZ7Ty_EMTx9MQFKLOLHsOc/edit?usp=sharing
