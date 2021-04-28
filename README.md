@@ -11,25 +11,12 @@ Initial Step: Please update input_data_paths.txt with the paths to the input fil
 Also, update the paths and variables accordingly in the Config.txt.
 
 
-For running all tests, please check out the project, and run the following commands in the command line:  \
-Firstly, go to the following corresponding location in your system.
+For running all tests, please check out the project, and perform the following actions in IDEA:  \
 
-1. Go to the src folder. \
-  Ex: /Users/ssrigiri/umass/532/Homeworks/project-1/p1_mapreduce-team-88/src
-2. Run the following command. \
-  For mac based systems:
-  ```
-  javac -d /Users/ssrigiri/umass/532/Homeworks/project-1/p1_mapreduce-team-88/out/production/project_folder/ *.java
-  ```
-  [Note]: Change the above path accordingly
-  
-3. Go to the folder where the .class files are stored \
-  Ex: /Users/ssrigiri/umass/532/Homeworks/project-1/p1_mapreduce-team-88/out/production/project_folder
-4. Run the following command.\
-  For mac based systems:
-  ```
-  java  RunTests /Users/ssrigiri/umass/532/Homeworks/project-1/p1_mapreduce-team-88/src/Config.txt
-  ```
+1. IDEA's working directory should be the project folder (where out, src and inputData folders are located)
+2. Compile RunTests and add the following argumet to the configuration `./src/Config.txt`
+3. Run the `RunTests` compiled file
+
   [NOTE]: Give the correct path of the Config.txt
 
 
