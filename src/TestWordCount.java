@@ -12,6 +12,7 @@ public class TestWordCount {
 
         try
         {
+            // Reads from the file
             FileInputStream fis=new FileInputStream(location);
             Scanner sc=new Scanner(fis);
             while(sc.hasNextLine())
@@ -67,6 +68,7 @@ public class TestWordCount {
         }
     }
 
+    // This method verifies if the counts match else this will throw an AssertionError
     private static void verifyWordCount() throws FileNotFoundException {
 
         File dir = new File(".");
@@ -96,6 +98,7 @@ public class TestWordCount {
         HashMap<String, Integer> actualCountsWorkers = returnActualCounts(foundFilesWorker);
         HashMap<String, Integer> actualCountsReducers = returnActualCounts(foundFilesReducer);
 
+        // The counts should match for every key
         for(String i : expectedCounts.keySet()) {
             if(!actualCountsWorkers.get(i).equals(expectedCounts.get(i))){
                 throw new AssertionError("Error in Worker: Counts don't match for '" + i + "'. Actual :" + actualCountsWorkers.get(i) + " Expected :" + expectedCounts.get(i));
