@@ -26,7 +26,7 @@ Notes :
 The implementation currently already takes care of multiple worker processes and their communication of the states to master. The master periodically checks for the status of the workers.
 This is a multi-process environment and each worker is a new process.
 After the Mappers are successfully launched and completed, we start the reducers.
-For each test, we also test fault tolerance by putting 1-2 workers in an infinite loop. Master detects when this happens and restarts the workers
+
 
 
 Verification:  The test cases that are run include : 
@@ -34,6 +34,8 @@ Verification:  The test cases that are run include :
 2. Character Count: Compute the character count of all the words occurring across all the input files. 
 3. Vowel Count: Compute the number of vowels occurring in all the words appending across the input files.
 
+
+For each test, we also test fault tolerance by putting 1-2 workers in an infinite loop. Master detects when this happens and restarts the workers. The amount of time the master waits before restarting workers can be set by modifying the `worker_threshold` variable in `Config.txt`. Master will attempt to restart the failed worker for a fixed number of times as specified by the `relaunch_times` variable in `Config.txt`
 
 # Summary/ Brief Description:
 
