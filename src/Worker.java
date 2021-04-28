@@ -15,7 +15,7 @@ public class Worker {
    public static void main(String[] args) throws InterruptedException {
         // establish a connection by providing host and port
         // number
-        Thread.sleep(1000);  // removing this might break things
+        Thread.sleep(10);  // removing this might break things
         try (Socket socket = new Socket("localhost", Integer.parseInt(args[5]))) {
             // writing to server
 
@@ -35,6 +35,7 @@ public class Worker {
                 MapReduceFunction<String, String> func;
 
                 func = functionFromString(args[2]);
+
                 String res = func.apply(file_path);
                 // String res = Worker.apply(file_path);
 
@@ -71,15 +72,15 @@ public class Worker {
                 HashMap<String, String> resultFromMapper = (HashMap<String, String>) deserialize(res);
 
                 if(resultFromMapper!=null || resultFromMapper.isEmpty()){
-                    System.out.println("Empty result received");
+//                    System.out.println("[WORKER]: Empty result received");
                 }
                 boolean isMapper = args[4].equalsIgnoreCase("M");
 
                 if(isMapper) {
-                    System.out.println("Mapper. Generating intermediate files");
+                    System.out.println("[WORKER]: Mapper. Generating intermediate files");
                     String filePaths = AssignIntermediateFilesAndReturnFileLocations(resultFromMapper, configMap);
                 } else {
-                    System.out.println("Reducer. Outputting");
+                    System.out.println("[WORKER]: Reducer. Outputting");
                     generateOutPutFile(resultFromMapper);
                 }
                 // out.println("filePaths returned from worker: "+ filePaths);
@@ -100,7 +101,7 @@ public class Worker {
             String fileName = "reducer_id_"+ workerId + "_output_.txt";
             File outPutFile = new File(fileName);
             if(resultFromReducer.isEmpty()){
-                System.out.println("No output generated. Will result in an empty file");
+                System.out.println("[WORKER]: No output generated. Will result in an empty file");
             }
             try (FileWriter writer = new FileWriter(outPutFile)) {
                 for (String i : resultFromReducer.keySet()) {
