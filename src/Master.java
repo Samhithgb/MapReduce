@@ -313,7 +313,7 @@ class Master {
                     File outPutFile = new File(fileName);
                     try (FileWriter writer = new FileWriter(outPutFile)) {
                         writer.write("1");
-                        System.out.println("[MASTER] : NO INFINITE LOOP NOW____________________________________________________________________________");
+                        System.out.println("[MASTER] : (Disabling fault tolerance forced failure for restarted worker)");
 
                     }
 //                    for (String s : argumentsList){

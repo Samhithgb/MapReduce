@@ -1,7 +1,4 @@
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 
 public class RunTests {
     static String configFile = "";
@@ -10,8 +7,17 @@ public class RunTests {
 
         String [] testFileList = {"TestCharacterCount", "TestWordCount", "TestVowelCount"};
         for(String i : testFileList) {
-            System.out.println("[RUNTESTS]:Working Directory = " + System.getProperty("user.dir"));
-            String[] command = new String[]{"java" , "-cp", System.getProperty("user.dir") + File.separator + "out" + File.separator + "production" + File.separator+ "project_folder" ,"TestCharacterCount", configFile};
+            // set run_second.txt to empty file to ensure fault tolerance is tested for each test
+            FileWriter fwOb = new FileWriter("run_second.txt", false);
+            PrintWriter pwOb = new PrintWriter(fwOb, false);
+            pwOb.flush();
+            pwOb.close();
+            fwOb.close();
+
+            System.out.println("[RUNTESTS]: Working Directory = " + System.getProperty("user.dir"));
+
+            // create new process for test
+            String[] command = new String[]{"java" , "-cp", System.getProperty("user.dir") + File.separator + "out" + File.separator + "production" + File.separator+ "project_folder" ,i, configFile};
             System.out.println("-------------------------------STARTED  " + i +"  -----------------------------------");
             ProcessBuilder pb = new ProcessBuilder(command).inheritIO();
             Process p = pb.start();
