@@ -1,12 +1,15 @@
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 
 public class RunTests {
     static String configFile = "";
     public static void main(String[] args) throws IOException, InterruptedException {
         configFile = args[0];
+
+        FileWriter fwOb = new FileWriter("run_second.txt", false);
+        PrintWriter pwOb = new PrintWriter(fwOb, false);
+        pwOb.flush();
+        pwOb.close();
+        fwOb.close();
 
         String [] testFileList = {"TestCharacterCount", "TestWordCount", "TestVowelCount"};
         for(String i : testFileList) {
