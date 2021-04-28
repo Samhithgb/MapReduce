@@ -54,7 +54,7 @@ public class Worker {
                 String t;
                 String t2 = "a";
                 if (get_stuck) {
-                    System.out.println("[WORKER]: STUCK FOREVER!");
+                    System.out.println("[WORKER " + workerId + "]: STUCK FOREVER!");
                     while (true) {
                         t = "" + t2;
                         if (t.equals(" ")) {
@@ -75,10 +75,10 @@ public class Worker {
                 boolean isMapper = args[4].equalsIgnoreCase("M");
 
                 if(isMapper) {
-                    System.out.println("[WORKER]: Mapper. Generating intermediate files");
+                    System.out.println("[WORKER " + workerId + "]: Mapper. Generating intermediate files");
                     String filePaths = AssignIntermediateFilesAndReturnFileLocations(resultFromMapper, configMap);
                 } else {
-                    System.out.println("[WORKER]: Reducer. Outputting");
+                    System.out.println("[WORKER " + workerId + "]: Reducer. Outputting");
                     generateOutPutFile(resultFromMapper);
                 }
                 // out.println("filePaths returned from worker: "+ filePaths);
@@ -99,7 +99,7 @@ public class Worker {
             String fileName = "reducer_id_"+ workerId + "_output_.txt";
             File outPutFile = new File(fileName);
             if(resultFromReducer.isEmpty()){
-                System.out.println("[WORKER]: No output generated. Will result in an empty file");
+                System.out.println("[WORKER " + workerId + "]: No output generated. Will result in an empty file");
             }
             try (FileWriter writer = new FileWriter(outPutFile)) {
                 for (String i : resultFromReducer.keySet()) {
