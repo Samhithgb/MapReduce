@@ -10,7 +10,7 @@ public class RunTests {
 
         String [] testFileList = {"TestCharacterCount", "TestWordCount", "TestVowelCount"};
         for(String i : testFileList) {
-            System.out.println("Working Directory = " + System.getProperty("user.dir"));
+            System.out.println("[RUNTESTS]:Working Directory = " + System.getProperty("user.dir"));
             String[] command = new String[]{"java" , "-cp", System.getProperty("user.dir") + File.separator + "out" + File.separator + "production" + File.separator+ "project_folder" ,"TestCharacterCount", configFile};
             ProcessBuilder pb = new ProcessBuilder(command).inheritIO();
             Process p = pb.start();
@@ -20,7 +20,7 @@ public class RunTests {
             }
         }
 
-        System.out.println("Done with running all the tests. Exiting..");
+        System.out.println("[RUNTESTS]:Done with running all the tests. Exiting..");
     }
 
 }

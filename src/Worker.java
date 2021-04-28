@@ -56,7 +56,7 @@ public class Worker {
                 String t;
                 String t2 = "a";
                 if (get_stuck) {
-                    System.out.println("STUCK FOREVER :(_______________________________________________________________");
+                    System.out.println("[WORKER]: STUCK FOREVER!");
                     while (true) {
                         t = "" + t2;
                         if (t.equals(" ")) {

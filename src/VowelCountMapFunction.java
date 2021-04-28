@@ -36,7 +36,7 @@ public class VowelCountMapFunction implements MapReduceFunction<String, String> 
             myReader.close();
 
         } catch (FileNotFoundException e) {
-            System.out.println("An error occurred.");
+            System.out.println("[VOWELCOUNTMAPFUNCTION] An error occurred.");
             e.printStackTrace();
         }
         try {

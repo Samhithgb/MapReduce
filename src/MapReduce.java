@@ -4,7 +4,7 @@ import java.util.Map;
 
 public class MapReduce implements Serializable {
     static int initialize(String[] source, MapReduceFunction<?, ?> mapFunction, MapReduceFunction<?, ?> reduceFunction, Map<String,String> configMap) throws IOException, InterruptedException {
-        System.out.println("MapReduce.map running");
+        System.out.println("[MAPREDUCE] : MapReduce initializing");
 
         // Launch master with necessary arguments
         String master_input = String.join(",", source);

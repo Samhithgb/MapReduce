@@ -34,7 +34,7 @@ public class TestVowelCount {
 
     public static void main(String[] args) throws IOException, InterruptedException {
         int number = 5;
-        System.out.println("RUNNING VOWEL COUNT VERIFICATION");
+        System.out.println("[TESTVOWELCOUNT] : RUNNING VOWEL COUNT VERIFICATION");
         configLocation = args[0];
 
 
@@ -50,7 +50,7 @@ public class TestVowelCount {
 
 
         String[] input_files = getInputDataList(configMap.get("input_data_locations"));
-        System.out.println("You entered: " + Arrays.toString(input_files));
+        System.out.println("[TESTVOWELCOUNT] : You entered: " + Arrays.toString(input_files));
         VowelCountMapFunction o = new VowelCountMapFunction();
         VowelCountReduceFunction r = new VowelCountReduceFunction();
 
@@ -58,7 +58,7 @@ public class TestVowelCount {
         if (res == 0) {
             verifyVowelCount();
         } else {
-            System.out.println("Failed with exit code: " + res + ". Try running in terminal/cmd ");
+            System.out.println("[TESTVOWELCOUNT] : Failed with exit code: " + res + ". Try running in terminal/cmd ");
         }
     }
 
@@ -104,6 +104,6 @@ public class TestVowelCount {
         }
 
         //no AssertionError thrown. Verification success.
-        System.out.println("VERIFICATION SUCCESS");
+        System.out.println("[TESTVOWELCOUNT] : VERIFICATION SUCCESS");
     }
 }

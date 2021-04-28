@@ -47,7 +47,7 @@ public class TestWordCount {
         }
 
 
-        System.out.println("RUNNING WORD COUNT VERIFICATION");
+        System.out.println("[TESTWORDCOUNT] : RUNNING WORD COUNT VERIFICATION");
         String[] input_files = getInputDataList(configMap.get("input_data_locations"));
         System.out.println("You entered: " + Arrays.toString(input_files));
         WordCountMapFunction o = new WordCountMapFunction();
@@ -108,7 +108,7 @@ public class TestWordCount {
             }
         }
         //no AssertionError thrown. Verification success.
-        System.out.println("VERIFICATION SUCCESS");
+        System.out.println("[TESTWORDCOUNT] : VERIFICATION SUCCESS");
     }
 
     private static HashMap<String ,Integer> returnActualCounts(File[] foundFiles) throws FileNotFoundException {
