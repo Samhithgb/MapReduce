@@ -13,7 +13,7 @@ public class RunTests {
             pwOb.close();
             fwOb.close();
 
-            System.out.println("Working Directory = " + System.getProperty("user.dir"));
+            System.out.println("[RUNTESTS]: Working Directory = " + System.getProperty("user.dir"));
             String[] command = new String[]{"java" , "-cp", System.getProperty("user.dir") + File.separator + "out" + File.separator + "production" + File.separator+ "project_folder" ,i, configFile};
             System.out.println("-------------------------------STARTED  " + i +"  -----------------------------------");
             ProcessBuilder pb = new ProcessBuilder(command).inheritIO();
@@ -25,7 +25,7 @@ public class RunTests {
             System.out.println("-------------------------------DONE-----------------------------------");
         }
 
-        System.out.println("Done with running all the tests. Exiting..");
+        System.out.println("[RUNTESTS]:Done with running all the tests. Exiting..");
     }
 
 }

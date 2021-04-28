@@ -11,25 +11,12 @@ Initial Step: Please update input_data_paths.txt with the paths to the input fil
 Also, update the paths and variables accordingly in the Config.txt.
 
 
-For running all tests, please check out the project, and run the following commands in the command line:  \
-Firstly, go to the following corresponding location in your system.
+For running all tests, please check out the project, and perform the following actions in IDEA:  \
 
-1. Go to the src folder. \
-  Ex: /Users/ssrigiri/umass/532/Homeworks/project-1/p1_mapreduce-team-88/src
-2. Run the following command. \
-  For mac based systems:
-  ```
-  javac -d /Users/ssrigiri/umass/532/Homeworks/project-1/p1_mapreduce-team-88/out/production/project_folder/ *.java
-  ```
-  [Note]: Change the above path accordingly
-  
-3. Go to the folder where the .class files are stored \
-  Ex: /Users/ssrigiri/umass/532/Homeworks/project-1/p1_mapreduce-team-88/out/production/project_folder
-4. Run the following command.\
-  For mac based systems:
-  ```
-  java  RunTests /Users/ssrigiri/umass/532/Homeworks/project-1/p1_mapreduce-team-88/src/Config.txt
-  ```
+1. IDEA's working directory should be the project folder (where out, src and inputData folders are located)
+2. Compile RunTests and add the following argumet to the configuration `./src/Config.txt`
+3. Run the `RunTests` compiled file
+
   [NOTE]: Give the correct path of the Config.txt
 
 
@@ -39,6 +26,7 @@ Notes :
 The implementation currently already takes care of multiple worker processes and their communication of the states to master. The master periodically checks for the status of the workers.
 This is a multi-process environment and each worker is a new process.
 After the Mappers are successfully launched and completed, we start the reducers.
+For each test, we also test fault tolerance by putting 1-2 workers in an infinite loop. Master detects when this happens and restarts the workers
 
 
 Verification:  The test cases that are run include : 
@@ -82,3 +70,9 @@ Strengths:
 4. Higher Throughput
 5. Availability
 6. Scalability
+
+# Architecture Design
+
+<img width="843" alt="Screenshot 2021-04-28 at 7 39 31 PM" src="https://user-images.githubusercontent.com/29397962/116418319-a8a6ee00-a859-11eb-8163-0dae8da621c7.png">
+
+<img width="785" alt="Screenshot 2021-04-28 at 7 40 10 PM" src="https://user-images.githubusercontent.com/29397962/116418336-ac3a7500-a859-11eb-9afd-bfcffa7cce1c.png">

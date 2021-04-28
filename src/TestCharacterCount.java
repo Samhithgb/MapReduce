@@ -47,11 +47,11 @@ public class TestCharacterCount {
         System.out.println(configMap);
 
 
-        System.out.println("RUNNING CHARACTER COUNT VERIFICATION");
+        System.out.println("[TESTCHARACTERCOUNT]: RUNNING CHARACTER COUNT VERIFICATION");
 
 
         String[] input_files = getInputDataList(configMap.get("input_data_locations"));
-        System.out.println("You entered: " + Arrays.toString(input_files));
+        System.out.println("[TESTCHARACTERCOUNT]: You entered: " + Arrays.toString(input_files));
         CharacterCountMapFunction o = new CharacterCountMapFunction();
         CharacterCountReduceFunction r = new CharacterCountReduceFunction();
 
@@ -59,7 +59,7 @@ public class TestCharacterCount {
         if (res == 0) {
             verifyCharacterCount();
         } else {
-            System.out.println("Failed with exit code: " + res + ". Try running in terminal/cmd ");
+            System.out.println("[TESTCHARACTERCOUNT]: Failed with exit code: " + res + ". Try running in terminal/cmd ");
         }
     }
 
@@ -113,6 +113,6 @@ public class TestCharacterCount {
             }
         }
         //no AssertionError thrown. Verification success.
-        System.out.println("VERIFICATION SUCCESS");
+        System.out.println("[TESTCHARACTERCOUNT]: VERIFICATION SUCCESS");
     }
 }

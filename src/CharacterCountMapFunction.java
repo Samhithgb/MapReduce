@@ -63,7 +63,7 @@ public class CharacterCountMapFunction implements MapReduceFunction<String, Stri
             myReader.close();
 
         } catch (FileNotFoundException e) {
-            System.out.println("An error occurred." + e);
+            System.out.println("[CHARACTERCOUNTMAPFUCNTION]An error occurred." + e);
             e.printStackTrace();
         }
         try {

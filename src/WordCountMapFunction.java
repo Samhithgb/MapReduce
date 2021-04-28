@@ -18,12 +18,8 @@ public class WordCountMapFunction implements MapReduceFunction<String, String> {
                         if(filename.length()<3){
                             break;
                         }
-                        System.out.println("***************** File reading started:: " + filename + "  ****************");
-
-                        // System.out.println("26");
                         File myObj = new File(filename);
                         Scanner myReader = new Scanner(myObj);
-                        // System.out.println("29");
                         while (myReader.hasNextLine()) {
                             String data = myReader.nextLine();
                             String[] array = data.split("=");
@@ -67,7 +63,6 @@ public class WordCountMapFunction implements MapReduceFunction<String, String> {
             myReader.close();
 
         } catch (FileNotFoundException e) {
-            System.out.println("An error occurred.");
             e.printStackTrace();
         }
         try {

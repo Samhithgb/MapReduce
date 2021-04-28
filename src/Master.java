@@ -52,13 +52,13 @@ class Master {
             int counter = 1;
             int num_of_workers = Integer.parseInt(sConfigMap.get("num_of_workers").trim());
             sWorkerThreshold = Integer.parseInt(sConfigMap.get("worker_threshold").trim());
-            System.out.println("Number of workers according to config file = "+num_of_workers);
+            System.out.println("[MASTER] : Number of workers according to config file = "+num_of_workers);
 
             if(mapperId != -1){
-                System.out.println("Relaunching mapper : " + mapperId);
+                System.out.println("[MASTER] : Relaunching mapper : " + mapperId);
 
                 if(mapperId > (inputs.length)){
-                    System.out.println("No work for the mapper. Not relaunching");
+                    System.out.println("[MASTER] : No work for the mapper. Not relaunching");
                     return;
                 }
 
@@ -78,7 +78,7 @@ class Master {
                 // inheritIO redirects all child process streams to this process
                 ProcessBuilder pb = new ProcessBuilder(startOptions).inheritIO();
                 Process p = pb.start();
-                System.out.println("This is a multi-process env and process info is "+ p);
+                System.out.println("[MASTER] : This is a multi-process env and process info is "+ p);
                 WorkerInfo info = new WorkerInfoBuilder().setWorkerProcess(p)
                         .setWorkerState(WorkerState.RUNNING)
                         .setWorkerType(WorkerType.MAPPER)
@@ -89,14 +89,14 @@ class Master {
 
                 sWorkers.put(info.getWorkerId(),info);
 
-                System.out.println("Number of processes : " + sWorkers.size());
+                System.out.println("[MASTER] : Number of processes : " + sWorkers.size());
                 // socket object to receive incoming client
                 // requests
 
                 Socket client = mapperSocket.accept();
                 // Displaying that new client is connected
                 // to server
-                System.out.println("New client connected "
+                System.out.println("[MASTER] : New client connected "
                         + client.getInetAddress()
                         .getHostAddress());
 
@@ -138,11 +138,11 @@ class Master {
 
     private static void launchReducers(HashMap<String, String> configMap, String reduceFunction, int reducerId){
         if(areReducersLaunched() && reducerId == -1) {
-            System.out.println("Reducers already launched. Skipping step.");
+            System.out.println("[MASTER] : Reducers already launched. Skipping step.");
             return;
         }
 
-        System.out.println("------------------------------Launching reducer/s now -------------------------------");
+        System.out.println("[MASTER] : ------------------------------Launching reducer/s now -------------------------------");
         sWorkers.clear();
 
         //Get all intermediate files
@@ -150,12 +150,12 @@ class Master {
         File[] foundFiles = dir.listFiles((dir1, name) -> name.contains("worker_id"));
 
         int number_of_reducers = Integer.parseInt(configMap.get("num_of_reducers").trim());
-        System.out.println("Number of reducers : " + number_of_reducers);
+        System.out.println("[MASTER] : Number of reducers : " + number_of_reducers);
 
         int startingId = 1;
 
         if(reducerId != -1) {
-          System.out.println("Relaunching reducer : " + reducerId);
+          System.out.println("[MASTER] : Relaunching reducer : " + reducerId);
           startingId = reducerId;
           number_of_reducers = startingId + 1;
         }
@@ -198,7 +198,7 @@ class Master {
                             .build();
 
                     sWorkers.put(info.getWorkerId(),info);
-                    System.out.println("Number of reducer processes : " + sWorkers.size());
+                    System.out.println("[MASTER] : Number of reducer processes : " + sWorkers.size());
 
                     // socket object to receive incoming client
                     // requests
@@ -206,7 +206,7 @@ class Master {
 
                     // Displaying that new client is connected
                     // to server
-                    System.out.println("New client connected "
+                    System.out.println("[MASTER] : New client connected "
                             + client.getInetAddress()
                             .getHostAddress());
 
@@ -262,9 +262,9 @@ class Master {
                 for(WorkerInfo i : sWorkers.values()) {
                     if(i.getState() != WorkerState.DONE){
                         isDone = false;
-                        System.out.println("Number of workers " + sWorkers.size());
+                        System.out.println("[MASTER] : Number of workers " + sWorkers.size());
                         long secondsRunning = ((LocalTime.now().toNanoOfDay() - i.getStartTime().toNanoOfDay())/1000000000);
-                        System.out.println("HEARTBEAT : " +i.getType().toString() + " " + i.getWorkerId() +  " has been running for " + secondsRunning+ " seconds");
+                        System.out.println("[MASTER] : HEARTBEAT : " +i.getType().toString() + " " + i.getWorkerId() +  " has been running for " + secondsRunning+ " seconds");
                         if(secondsRunning > sWorkerThreshold) {
                             relaunchWorker(i);
                         }
@@ -278,7 +278,7 @@ class Master {
             if(isDone){
                 if(areReducersLaunched()){
                     //We are done.
-                    System.out.println("All done. Shutting down master");
+                    System.out.println("[MASTER] : All done. Shutting down master");
                     scheduler.shutdown();
                     return;
                 }
@@ -286,7 +286,7 @@ class Master {
             }
             else if(isError){
                 // exit status 1 if error occurs in worker
-                System.out.println("Error while running UDF");
+                System.out.println("[MASTER] : Error while running UDF");
                 System.exit(1);
             }
 
@@ -299,7 +299,7 @@ class Master {
         p.destroyForcibly();
 
         if(sRelaunchTimes == 0){
-            System.out.println("Reached limit for number of re-launches. Moving on after the kill");
+            System.out.println("[MASTER] : Reached limit for number of re-launches. Moving on after the kill");
             System.exit(1);
         }
         sRelaunchTimes--;
@@ -313,7 +313,7 @@ class Master {
                     File outPutFile = new File(fileName);
                     try (FileWriter writer = new FileWriter(outPutFile)) {
                         writer.write("1");
-                        System.out.println("NO INFINITE LOOP NOW____________________________________________________________________________");
+                        System.out.println("[MASTER] : NO INFINITE LOOP NOW____________________________________________________________________________");
 
                     }
 //                    for (String s : argumentsList){
@@ -325,7 +325,7 @@ class Master {
                 }
             } else {
                 for (String s : argumentsList){
-                    System.out.println("----->" + s);
+                    System.out.println("[MASTER] : ----->" + s);
                 }
                 launchReducers(sConfigMap,argumentsList[3],i.getWorkerId());
             }
@@ -345,14 +345,14 @@ class Master {
         }
 
         public void run() {
-            System.out.println(" Starting client handler for worker id : " + workerId);
+            System.out.println("[MASTER] : Starting client handler for worker id : " + workerId);
 
             PrintWriter out = null;
             BufferedReader in = null;
             try {
                 // get the outputstream of client
                 if(clientSocket.isClosed()){
-                    System.out.println("Socket closed");
+                    System.out.println("[MASTER] : Socket closed");
                     return;
                 }
 
@@ -366,7 +366,7 @@ class Master {
                 String line;
 
                 if((mapperSocket!=null && mapperSocket.isClosed()) && (reducerSocket!=null &&reducerSocket.isClosed())){
-                    System.out.println("Closing the socket");
+                    System.out.println("[MASTER] : Closing the socket");
                     clientSocket.close();
                 }
 
@@ -378,11 +378,11 @@ class Master {
                             int id = Integer.parseInt(two[0].split(" ")[1]);
                             WorkerInfo info = sWorkers.get(id);
                             info.setState(status);
-                            System.out.println("Status update received for Worker : " + id + " " + status.toString());
+                            System.out.println("[MASTER] : Status update received for Worker : " + id + " " + status.toString());
                         }
                 }
             } catch (IOException e) {
-                System.out.println("Exception");
+                System.out.println("[MASTER] : Exception");
   /*              ClientHandler clientSock
                         = new ClientHandler(clientSocket, workerId);
                 new Thread(clientSock).start();*/
