@@ -15,12 +15,14 @@ public class RunTests {
         for(String i : testFileList) {
             System.out.println("Working Directory = " + System.getProperty("user.dir"));
             String[] command = new String[]{"java" , "-cp", System.getProperty("user.dir") + File.separator + "out" + File.separator + "production" + File.separator+ "project_folder" ,"TestCharacterCount", configFile};
+            System.out.println("-------------------------------STARTED  " + i +"  -----------------------------------");
             ProcessBuilder pb = new ProcessBuilder(command).inheritIO();
             Process p = pb.start();
             p.waitFor();
             if(p.exitValue()!=0){
                 throw new AssertionError("Error while verificaiton");
             }
+            System.out.println("-------------------------------DONE-----------------------------------");
         }
 
         System.out.println("Done with running all the tests. Exiting..");
