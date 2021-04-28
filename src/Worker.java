@@ -25,13 +25,8 @@ public class Worker {
             workerId = args[0];
             sendState(WorkerState.RUNNING,out);
 
-//            if(Integer.parseInt(workerId) == 1){
-//                while (true){}
-//            }
-
             try {
                 String file_path = args[1];
-//                Thread.sleep(5000); // uncomment to test if processes run in parallel
                 MapReduceFunction<String, String> func;
 
                 func = functionFromString(args[2]);
@@ -39,6 +34,7 @@ public class Worker {
                 String res = func.apply(file_path);
                 // String res = Worker.apply(file_path);
 
+                // Below file tells whether fault tolerance is being tested
                 String filename = "run_second.txt";
                 File myObj = new File(filename);
                 Scanner myReader = new Scanner(myObj);
@@ -48,11 +44,13 @@ public class Worker {
 
                 }
                 boolean get_stuck = true;
+
                 myReader.close();
                 if(data.equals("1")){
                     get_stuck = false;
                 }
 
+                // Put worker into infinite loop to simulate crash
                 String t;
                 String t2 = "a";
                 if (get_stuck) {
@@ -60,7 +58,7 @@ public class Worker {
                     while (true) {
                         t = "" + t2;
                         if (t.equals(" ")) {
-                            break;
+                            break; // will never happen
                         }
                     }
                 }

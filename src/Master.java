@@ -308,6 +308,7 @@ class Master {
             p.waitFor();
             if(i.getType() == WorkerType.MAPPER){
                 try {
+                    // This file tells whether fault tolerance is being tested
                     String fileName = "run_second.txt";
                     File outPutFile = new File(fileName);
                     try (FileWriter writer = new FileWriter(outPutFile)) {
